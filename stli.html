@@ -1,0 +1,191 @@
+ <!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>স্টুডেন্ট লিস্ট</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+    }
+    header {
+      background: #004080;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+
+    nav {
+      background-color: #0059b3;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    nav ul li {
+      position: relative;
+    }
+
+    nav ul li a {
+      display: block;
+      color: white;
+      padding: 12px 20px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    nav ul li:hover ul {
+      display: block;
+    }
+
+    nav ul li ul {
+      display: none;
+      position: absolute;
+      background-color: #0073e6;
+      top: 100%;
+      left: 0;
+      min-width: 150px;
+      z-index: 1000;
+    }
+
+    nav ul li ul li a {
+      padding: 10px;
+    }
+
+    .container {
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #003366;
+    }
+
+    .student-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .student-card h3 {
+      color: #004080;
+    }
+
+    .info {
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+
+    .info strong {
+      color: #0059b3;
+    }
+
+    @media (min-width: 600px) {
+      .student-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
+    }
+
+    @media (min-width: 1000px) {
+      .student-list {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Swapno Computer</h1>
+  </header>
+
+  <nav>
+    <ul>
+      <li><a href="s.html">Home</a></li>
+      <li><a href="profile.html">Profile</a></li>
+      <li>
+        <a href="#">Registration</a>
+        <ul>
+          <li><a href="#">Students</a></li>
+          <li><a href="#">Teacher</a></li>
+        </ul>
+      </li>
+      <li><a href="login.html">Login</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <h2>List Of Students</h2>
+    <h2>This website Made by Saiyed</h2>
+    <div class="student-list">
+
+      <!-- Student 1 -->
+      <div class="student-card">
+        <h3>Sadia Sultana</h3>
+        <div class="info">
+          <p><strong>Mobile:</strong> +880xxxxxxxxxx</p>
+          <p><strong>Location:</strong> Laliar hat</p>
+          <p><strong>Course:</strong> Office Course</p>
+          <p><strong>Period:</strong> 3 months</p>
+        </div>
+      </div>
+
+      <!-- Student 2 -->
+      <div class="student-card">
+        <h3>Rakibul Islam Akash</h3>
+        <div class="info">
+          <p><strong>mobile:</strong> +880xxxxxxxxxx</p>
+          <p><strong>Location:</strong> Notun Para</p>
+          <p><strong>Course:</strong> Office Management</p>
+          <p><strong>Period:</strong> 3 months</p>
+        </div>
+      </div>
+
+      <!-- Student 3 -->
+      <div class="student-card">
+        <h3>SUPRITI SHIL</h3>
+        <div class="info">
+          <p><strong>MOBILE:</strong> +880xxxxxxxxxx</p>
+          <p><strong>LOCATION:</strong> SIKABPUR</p>
+          <p><strong>COURSE:</strong> OFFICE MANAGEMENT</p>
+          <p><strong>PERIOD:</strong> 3 MONTH</p>
+        </div>
+      </div>
+
+      <!-- Student 4 -->
+      <div class="student-card">
+        <h3>SHARMIN JERIN</h3>
+        <div class="info">
+          <p><strong>PHONE:</strong> +880xxxxxxxxxx</p>
+          <p><strong>LOCATION:</strong> AMANBAZAR</p>
+          <p><strong>COURSE:</strong> OFFICE MANAGEMENT </p>
+          <p><strong>PERIOD:</strong> 6 MONTHS</p>
+        </div>
+      </div>
+
+      <!-- এখানে আপনি আরো ২৬ জন স্টুডেন্ট কপি করে যুক্ত করতে পারেন -->
+      
+    </div>
+  </div>
+
+</body>
+</html>

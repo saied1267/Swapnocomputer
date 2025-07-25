@@ -1,0 +1,213 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - Saied Website</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(120deg, #89f7fe, #66a6ff);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navbar */
+    nav {
+      background-color: #003366;
+      padding: 15px 40px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    nav .menu a {
+      color: white;
+      text-decoration: none;
+      margin-left: 25px;
+      font-size: 16px;
+    }
+
+    nav .menu a:hover {
+      text-decoration: underline;
+    }
+
+    /* Login container */
+    .container {
+      max-width: 400px;
+      margin: auto;
+      margin-top: 40px;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .container h2 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #003366;
+    }
+
+    .container p {
+      text-align: center;
+      font-size: 14px;
+      margin-bottom: 20px;
+      color: #444;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      font-weight: 600;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      transition: border 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border: 1px solid #66a6ff;
+    }
+
+    .remember-forgot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px 0 20px;
+      font-size: 14px;
+    }
+
+    .remember-forgot input {
+      margin-right: 5px;
+    }
+
+    .remember-forgot a {
+      text-decoration: none;
+      color: #003366;
+    }
+
+    .remember-forgot a:hover {
+      text-decoration: underline;
+    }
+
+    .btn {
+      width: 100%;
+      background: #003366;
+      color: white;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #0055aa;
+    }
+
+    .error {
+      color: red;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    footer {
+      margin-top: auto;
+      text-align: center;
+      padding: 15px;
+      color: #333;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">Swapno Computer</div>
+    <div class="menu">
+      <a href="s.html">Home</a>
+      <a href="stli.html">Profile</a>
+      <a href="registration.html">Registration</a>
+      <a href="stli.html">Login</a>
+    </div>
+  </nav>
+
+  <!-- Login Form -->
+  <div class="container">
+    <h2>Login</h2>
+    <p>This website is designed by <strong style="color:#003366; font-size: 22px;">Saiyed</strong></p>
+    <form id="loginForm" onsubmit="return validateForm()">
+      <label for="username">Student Name or Mobile</label>
+      <input type="text" id="username" name="username" placeholder="Enter your username" />
+      <div id="usernameError" class="error"></div>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" placeholder="Enter your password" />
+      <div id="passwordError" class="error"></div>
+
+      <div class="remember-forgot">
+        <label><input type="checkbox" id="remember" /> Remember Me</label>
+        <a href="#">Forgot Password?</a>
+      </div>
+
+      <button type="submit" class="btn">Login</button>
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 Swapno Computer. Aman Bazar.
+  </footer>
+
+  <!-- JavaScript for validation -->
+  <script>
+    function validateForm() {
+      let username = document.getElementById("username").value.trim();
+      let password = document.getElementById("password").value.trim();
+      let valid = true;
+
+      document.getElementById("usernameError").textContent = "";
+      document.getElementById("passwordError").textContent = "";
+
+      if (username === "") {
+        document.getElementById("usernameError").textContent = "Username is required.";
+        valid = false;
+      }
+      if (password === "") {
+        document.getElementById("passwordError").textContent = "Password is required.";
+        valid = false;
+      }
+
+      return valid;
+    }
+  </script>
+
+</body>
+</html>
