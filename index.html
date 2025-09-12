@@ -2,18 +2,16 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>saied website</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Photo Gallery with Marquee</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
     body {
+      margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background-color: #f4f4f4;
     }
+
+    /* Header */
     header {
       background-color: #004080;
       color: white;
@@ -22,6 +20,7 @@
       justify-content: space-between;
       align-items: center;
     }
+
     header h1 {
       font-size: 24px;
     }
@@ -35,6 +34,173 @@
     nav {
       background-color: #0059b3;
     }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav ul li a {
+      display: block;
+      color: white;
+      padding: 12px 20px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    nav ul li a:hover {
+      background-color: #003d66;
+      border-radius: 5px;
+    }
+
+    @media (max-width: 768px) {
+      .menu-icon {
+        display: block;
+      }
+      nav ul {
+        display: none;
+        flex-direction: column;
+        text-align: center;
+      }
+      nav ul.show {
+        display: flex;
+      }
+    }
+
+    /* Marquee */
+    .marquee {
+      background: #ffcc00;
+      padding: 10px;
+      font-weight: bold;
+      text-align: center;
+      font-size: 18px;
+      color: #003d66;
+    }
+
+    /* Gallery Section */
+    .gallery-container {
+      display: flex;
+      overflow-x: auto;
+      padding: 20px;
+      gap: 25px;
+      scroll-behavior: smooth;
+    }
+
+    .gallery-container::-webkit-scrollbar {
+      height: 10px;
+    }
+
+    .gallery-container::-webkit-scrollbar-thumb {
+      background-color: #004080;
+      border-radius: 10px;
+    }
+
+    .card {
+      min-width: 250px;
+      height: 360px;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      background-color: white;
+      flex-shrink: 0;
+      transition: transform 0.4s, box-shadow 0.4s;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card img {
+      width: 100%;
+      height: 70%;
+      object-fit: cover;
+      transition: transform 0.4s;
+    }
+
+    .card:hover img {
+      transform: scale(1.1);
+    }
+
+    .card p {
+      padding: 10px;
+      font-weight: bold;
+      text-align: center;
+      color: #004080;
+      background: linear-gradient(to right, #e0f7fa, #b2ebf2);
+      margin: 0;
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      border-top: 1px solid #004080;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Designed by SAIYED</h1>
+  <div class="menu-icon" onclick="toggleMenu()">&#9776;</div>
+</header>
+<nav>
+  <ul id="navLinks">
+    <li><a href="#">Home</a></li>
+    <li><a href="result.html">See Results</a></li>
+    <li><a href="stli.html">Students list</a></li>
+    <li><a href="reg.html">Register</a></li>
+    <li><a href="loginform.html">Login</a></li>
+  </ul>
+</nav>
+
+<!-- Marquee -->
+<div class="marquee">
+  <marquee>স্বপ্ন কারিগরি কম্পিউটার। ভর্তির জন্য যোগাযোগ, 01615650912, 01941652097</marquee>
+</div>
+
+<!-- Gallery Section -->
+<section class="gallery-container">
+  <div class="card">
+    <img src="sp4.jpg" alt="School Building">
+    <p>Students Picture</p>
+  </div>
+  <div class="card">
+    <img src="sp3.jpg" alt="Classroom">
+    <p>Students Picture</p>
+  </div>
+  <div class="card">
+    <img src="sp5.jpg" alt="Computer Lab">
+    <p>Students Picture</p>
+  </div>
+  <div class="card">
+    <img src="sp2.jpg" alt="Playground">
+    <p>Students Picture</p>
+  </div>
+  <div class="card">
+    <img src="sp1.jpg" alt="Library">
+    <p>Students Picture</p>
+  </div>
+</section>
+
+<script>
+  function toggleMenu() {
+    var nav = document.getElementById("navLinks");
+    nav.classList.toggle("show");
+  }
+</script>
+
+</body>
+</html>    }
 
     nav ul {
       list-style: none;
