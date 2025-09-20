@@ -11,7 +11,6 @@
       padding: 0;
     }
 
-    /* ===== Navbar Design ===== */
     nav {
       background-color: #0059b3;
       position: sticky;
@@ -57,7 +56,6 @@
     nav ul li ul li a {
       padding: 10px;
     }
-    /* ========================= */
 
     h2 {
       text-align: center;
@@ -70,7 +68,6 @@
       margin: 20px;
     }
 
-    /* Container */
     .card-container {
       display: flex;
       flex-wrap: wrap;
@@ -79,7 +76,6 @@
       margin: 20px;
     }
 
-    /* Card Design */
     .card {
       background: white;
       border-radius: 16px;
@@ -90,7 +86,6 @@
       animation: zoomIn 0.7s ease-in-out;
       position: relative;
     }
-
     .card:hover {
       transform: translateY(-10px) scale(1.05);
       box-shadow: 0 10px 20px rgba(0,0,0,0.25);
@@ -114,7 +109,6 @@
       color: #444;
     }
 
-    /* Fail Text */
     .fail {
       color: red;
       font-weight: bold;
@@ -129,7 +123,6 @@
       text-align: center;
     }
 
-    /* Animations */
     @keyframes zoomIn {
       from { transform: scale(0.7); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
@@ -148,7 +141,6 @@
 </head>
 <body>
 
-  <!-- Navbar -->
   <nav>
     <ul>
       <li><a href="index.html">Home</a></li>
@@ -164,42 +156,48 @@
     </ul>
   </nav>
 
-  <!-- Title -->
   <h2>🌟 Swapno Computer Excel Marksheet 🌟</h2>
 
-  <!-- Card Container -->
   <div class="card-container">
 
     <div class="card">
       <h3>Tusha Chowdori</h3>
-      <p><b>MCQ Mark:</b> 36 (Pass)</p>
-      <p><b>Practical Mark:</b> 12 (<span class="fail">Fail</span>)</p>
-      <p><b>Total %:</b> 0</p>
-      <p><b>Point:</b> 0</p>
-      <p><b>Grade:</b> <span class="fail">Fail</span></p>
-      <p class="note">👉 Aro Monojogi Hote Hobe</p>
+      <p><b>MCQ Mark:</b> 40 (Pass)</p>
+      <p><b>Practical Mark:</b> 34 (Pass)</p>
+      <p><b>Total %:</b> 74</p>
+      <p><b>Point:</b> 4.0</p>
+      <p><b>Grade:</b> A</p>
     </div>
 
     <div class="card">
       <h3>Sadia Sultana</h3>
-      <p><b>MCQ Mark:</b> 42 (Pass)</p>
-      <p><b>Practical Mark:</b> 22 (Pass)</p>
-      <p><b>Total %:</b> 64</p>
-      <p><b>Point:</b> 3.5</p>
-      <p><b>Grade:</b> A-</p>
+      <p><b>MCQ Mark:</b> 44 (Pass)</p>
+      <p><b>Practical Mark:</b> 45 (Pass)</p>
+      <p><b>Total %:</b> 89</p>
+      <p><b>Point:</b> 5.0</p>
+      <p><b>Grade:</b> A+</p>
     </div>
 
     <div class="card">
       <h3>Supriti Shil</h3>
-      <p><b>MCQ Mark:</b> 41 (Pass)</p>
-      <p><b>Practical Mark:</b> 24 (Pass)</p>
-      <p><b>Total %:</b> 65</p>
-      <p><b>Point:</b> 3.5</p>
-      <p><b>Grade:</b> A-</p>
+      <p><b>MCQ Mark:</b> 43 (Pass)</p>
+      <p><b>Practical Mark:</b> 47 (Pass)</p>
+      <p><b>Total %:</b> 90</p>
+      <p><b>Point:</b> 5.0</p>
+      <p><b>Grade:</b> A+</p>
     </div>
 
     <div class="card">
       <h3>Faizan Ramim</h3>
+      <p><b>MCQ Mark:</b> 43 (Pass)</p>
+      <p><b>Practical Mark:</b> 43 (Pass)</p>
+      <p><b>Total %:</b> 86</p>
+      <p><b>Point:</b> 5.0</p>
+      <p><b>Grade:</b> A+</p>
+    </div>
+
+    <div class="card">
+      <h3>Rakibul Hasan Akash</h3>
       <p><b>MCQ Mark:</b> 40 (Pass)</p>
       <p><b>Practical Mark:</b> 27 (Pass)</p>
       <p><b>Total %:</b> 67</p>
@@ -208,70 +206,41 @@
     </div>
 
     <div class="card">
-      <h3>Rakibul Hasan Akash</h3>
-      <p><b>MCQ Mark:</b> 36 (Pass)</p>
-      <p><b>Practical Mark:</b> 22 (Pass)</p>
-      <p><b>Total %:</b> 58</p>
-      <p><b>Point:</b> 3</p>
-      <p><b>Grade:</b> B</p>
-    </div>
-
-    <div class="card">
-      <h3>Minhazul Kabir Tamim</h3>
-      <p><b>MCQ Mark:</b> 44 (Pass)</p>
-      <p><b>Practical Mark:</b> 36 (Pass)</p>
-      <p><b>Total %:</b> 80</p>
-      <p><b>Point:</b> 5</p>
-      <p><b>Grade:</b> A+</p>
-    </div>
-
-    <div class="card">
-      <h3>Sayeed Hosain Fahim</h3>
-      <p><b>MCQ Mark:</b> 39 (Pass)</p>
-      <p><b>Practical Mark:</b> 12 (<span class="fail">Fail</span>)</p>
-      <p><b>Total %:</b> 0</p>
-      <p><b>Point:</b> 0</p>
-      <p><b>Grade:</b> <span class="fail">Fail</span></p>
-      <p class="note">👉 Aro Monojogi Hote Hobe</p>
-    </div>
-
-    <div class="card">
-      <h3>Tanjibul Islam Tawsif</h3>
-      <p><b>MCQ Mark:</b> 41 (Pass)</p>
-      <p><b>Practical Mark:</b> 17 (Pass)</p>
-      <p><b>Total %:</b> 58</p>
-      <p><b>Point:</b> 3</p>
-      <p><b>Grade:</b> B</p>
-    </div>
-
-    <div class="card">
-      <h3>Saidul Islam Afif</h3>
-      <p><b>MCQ Mark:</b> 47 (Pass)</p>
-      <p><b>Practical Mark:</b> <span class="fail">Fail</span></p>
-      <p><b>Total %:</b> 0</p>
-      <p><b>Point:</b> 0</p>
-      <p><b>Grade:</b> <span class="fail">Fail</span></p>
-      <p class="note">👉 Aro Monojogi Hote Hobe</p>
-    </div>
-
-    <div class="card">
       <h3>Ismat Jerin Nikita</h3>
-      <p><b>MCQ Mark:</b> 45 (Pass)</p>
-      <p><b>Practical Mark:</b> 26 (Pass)</p>
-      <p><b>Total %:</b> 71</p>
-      <p><b>Point:</b> 4</p>
-      <p><b>Grade:</b> A</p>
+      <p><b>MCQ Mark:</b> 42 (Pass)</p>
+      <p><b>Practical Mark:</b> 25 (Pass)</p>
+      <p><b>Total %:</b> 67</p>
+      <p><b>Point:</b> 3.5</p>
+      <p><b>Grade:</b> A-</p>
     </div>
 
     <div class="card">
       <h3>Nusrat Alam</h3>
-      <p><b>MCQ Mark:</b> 46 (Pass)</p>
-      <p><b>Practical Mark:</b> 26 (Pass)</p>
-      <p><b>Total %:</b> 72</p>
-      <p><b>Point:</b> 4</p>
+      <p><b>MCQ Mark:</b> 41 (Pass)</p>
+      <p><b>Practical Mark:</b> 32 (Pass)</p>
+      <p><b>Total %:</b> 73</p>
+      <p><b>Point:</b> 4.0</p>
       <p><b>Grade:</b> A</p>
+    </div>
+
+    <div class="card">
+      <h3>Sharmin Jerin</h3>
+      <p><b>MCQ Mark:</b> 39 (Pass)</p>
+      <p><b>Practical Mark:</b> 39 (Pass)</p>
+      <p><b>Total %:</b> 78</p>
+      <p><b>Point:</b> 4.0</p>
+      <p><b>Grade:</b> A</p>
+    </div>
+
+    <div class="card">
+      <h3>Ikrar Jahan</h3>
+      <p><b>MCQ Mark:</b> 34 (Pass)</p>
+      <p><b>Practical Mark:</b> 32 (Pass)</p>
+      <p><b>Total %:</b> 66</p>
+      <p><b>Point:</b> 3.5</p>
+      <p><b>Grade:</b> A-</p>
     </div>
 
   </div>
 </body>
-</html>
+           </html>
