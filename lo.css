@@ -1,0 +1,21 @@
+.login{
+  border:1px solid black;
+  width:400px;
+  height:500px;
+  background: lightgray;
+  border-radius:20px;
+  
+}
+form{
+  display: block;
+  box-sizing: border-box;
+  padding:40px;
+  width:100%;
+  height:100%;
+  background-color: brightness(40%);
+  flex-direction: column;
+  display:flex;
+  gap: 5px;
+  
+  
+}

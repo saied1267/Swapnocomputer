@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Information - Pin Protected Only For Saiyed Can Enter Saiyed Sir</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f6f9;
+      padding: 20px;
+      text-align: center;
+    }
+    h2 {
+      color: #004080;
+      margin-bottom: 20px;
+    }
+    #pinSection {
+      margin-top: 100px;
+    }
+    input[type="password"] {
+      padding: 10px;
+      font-size: 16px;
+      width: 200px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      background: #0066cc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    button:hover {
+      background: #004080;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      margin-top: 20px;
+      display: none; /* Initially hide table */
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background: linear-gradient(90deg, #0066cc, #0099ff);
+      color: white;
+    }
+    tr:nth-child(even) {
+      background: #f1f2f3;
+    }
+    tr:hover {
+      background: #eaf3ff;
+      transition: 0.3s;
+    }
+  </style>
+</head>
+<body>
+  <h2>Student Information - Office Management Only can Enter Saiyed Sir</h2>
+
+  <div id="pinSection">
+    <p>অনুগ্রহ করে পিন দিন:</p>
+    <input type="password" id="pinInput" placeholder="Enter Pin">
+    <button onclick="checkPin()">Submit</button>
+    <p id="error" style="color:red; display:none;">ভুল পিন! আবার চেষ্টা করুন।</p>
+  </div>
+
+  <table id="studentTable">
+   <tr>
+      <th>Name</th>
+      <th>Father's Name</th>
+      <th>Mother's Name</th>
+      <th>Address</th>
+      <th>Mobile</th>
+      <th>Course</th>
+      <th>Roll</th>
+      <th>Pin</th>
+    </tr>
+    <tr><td>Md Minhajul Kabir</td><td>Humayoun Kabir</td><td>Sarbin Akter</td><td>Aman bazar</td><td>01752563250</td><td>Office Management</td><td>101</td><td>2009</td></tr>
+    <tr><td>Nur Islam Babo</td><td>Nasir Miya</td><td>Sahin Akter</td><td>Volioya para</td><td>01886515246</td><td>Office Management</td><td>102</td><td>2007</td></tr>
+    <tr><td>Hamida Sulthana</td><td>MD.Nasir</td><td>Kulsuma Aktar</td><td>Lalirhat</td><td>01830346676</td><td>Office Management</td><td>103</td><td>2010</td></tr>
+    <tr><td>RAKIBUL Hassan</td><td>Belal hossain</td><td>Rahima akter</td><td>Aman bazar</td><td>01872676210</td><td>Office Management</td><td>104</td><td>2008</td></tr>
+    <tr><td>Suprity Shil</td><td>Rakhal Shil</td><td>Ratna Shil</td><td>Khandakia</td><td>01996725194</td><td>Office Management</td><td>105</td><td>2006</td></tr>
+    <tr><td>Tusha chowdhury</td><td>Ajoy chowdhury</td><td>Arssna chowdhury</td><td>shikarpur</td><td>01585727018</td><td>Office Management</td><td>106</td><td>2020</td></tr>
+    <tr><td>Jubayer Ivna</td><td>Monsur Alam</td><td>Rubi Akter</td><td>Kulgaw</td><td>01860260834</td><td>Office Management</td><td>107</td><td>1234</td></tr>
+    <tr><td>Shirin Akter</td><td>Jane Alam</td><td>Parvin Akter</td><td>Kulgaw</td><td>01727718747</td><td>Office Management</td><td>108</td><td>1234</td></tr>
+    <tr><td>Nusrat Alam</td><td>Mohammed Khursed Alam</td><td>Shamim Akter</td><td>Khandakia</td><td>01885340870</td><td>Office Management</td><td>109</td><td>1885</td></tr>
+    <tr><td>Emon</td><td>Shahjhan</td><td>Feroza</td><td>Aman bazar</td><td>01642870994</td><td>Office Management</td><td>110</td><td>1100</td></tr>
+    <tr><td>Sharmin Jerin</td><td>Naser Uddin</td><td>Jesmin Akter</td><td>Notunpara</td><td>01863374176</td><td>Office Management</td><td>112</td><td>7417</td></tr>
+    <tr><td>Hasan Tareq</td><td>Mohammad syed hossaIN</td><td>Rashada Akter</td><td>Foteyabad</td><td>1994446992</td><td>Office Management</td><td>113</td><td>1234</td></tr>
+    <tr><td>Taohid Tanvir</td><td>Quabi Farid Hyder</td><td>Nasira hyder</td><td>Aman Bazar</td><td>1812373946</td><td>Office Management</td><td>114</td><td>1234</td></tr>
+    <tr><td>Yasar Bin Faiz</td><td>Faizul Islam Sikder</td><td>Jesmin Akter</td><td>aman bazar</td><td>01631829762</td><td>Office Management</td><td>115</td><td>1234</td></tr>
+    <tr><td>Ikrar Jahan</td><td>Md yousop</td><td>taslima akter</td><td>Aman bazar</td><td>01821305317</td><td>Office Management</td><td>116</td><td>1234</td></tr>
+    <tr><td>Md minhaj ahamed fahim</td><td>mintu</td><td>rehena begum</td><td>Aman bazar</td><td>01824560010</td><td>Office Management</td><td>117</td><td>1234</td></tr>
+    <tr><td>ismot jerin nikita</td><td>abul bashaR</td><td>LUTFOR NAHAR</td><td>Aman bazar</td><td>01830218417</td><td>Office Management</td><td>118</td><td>1234</td></tr>
+    <tr><td>Meherunnesa joya</td><td>mohammad jamir uddin</td><td>khadija yeasmin</td><td>Aman bazar</td><td>01311813579</td><td>Office Management</td><td>119</td><td>1234</td></tr>
+     <tr><td>Meherunnesa joya</td><td>mohammad jamir uddin</td><td>khadija yeasmin</td><td>Aman bazar</td><td>01311813579</td><td>Office Management</td><td>119</td><td>1234</td></tr>
+  </table>
+
+  <script>
+    const correctPin = "40404343";
+
+    function checkPin() {
+      const inputPin = document.getElementById("pinInput").value;
+      if(inputPin === correctPin){
+        document.getElementById("studentTable").style.display = "table";
+        document.getElementById("pinSection").style.display = "none";
+      } else {
+        document.getElementById("error").style.display = "block";
+      }
+    }
+  </script>
+</body>
+</html>
