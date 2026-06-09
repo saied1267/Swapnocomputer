@@ -37,6 +37,8 @@ export default function App() {
   const [visitorMessages, setVisitorMessages] = useState<VisitorMessage[]>([]);
   const [notices, setNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState(true);
+  const [usingFallbackLocalStorage, setUsingFallbackLocalStorage] = useState(false);
+  const [dbErrorMessage, setDbErrorMessage] = useState<string | null>(null);
 
   // Firestore DB operations definitions
   const fetchStudents = async () => {
@@ -105,113 +107,253 @@ export default function App() {
   // Seeding effect on component mount
   useEffect(() => {
     const loadAndSeedData = async () => {
+      let offlineMode = false;
+      let errorMsgStr = "";
+      let dbStudents: Student[] = [];
+      let dbResults: ModelTestResult[] = [];
+      let dbNotices: Notice[] = [];
+      let dbMessages: VisitorMessage[] = [];
+
       try {
-        let dbStudents = await fetchStudents();
-        if (dbStudents.length === 0) {
-          for (const s of INITIAL_STUDENTS) {
-            await setDoc(doc(db, "students", s.roll), s);
+        // Try testing connection by reading students collection
+        try {
+          dbStudents = await fetchStudents();
+          if (dbStudents.length === 0) {
+            for (const s of INITIAL_STUDENTS) {
+              await setDoc(doc(db, "students", s.roll), s);
+            }
+            dbStudents = INITIAL_STUDENTS;
           }
-          dbStudents = INITIAL_STUDENTS;
+        } catch (e: any) {
+          console.warn("Firestore collection 'students' failed. Enforcing offline fallback.", e);
+          offlineMode = true;
+          errorMsgStr = e?.message || String(e);
         }
 
-        let dbResults = await fetchResults();
-        if (dbResults.length === 0) {
-          for (const r of INITIAL_RESULTS) {
-            await setDoc(doc(db, "results", r.roll), r);
+        if (!offlineMode) {
+          try {
+            dbResults = await fetchResults();
+            if (dbResults.length === 0) {
+              for (const r of INITIAL_RESULTS) {
+                await setDoc(doc(db, "results", r.roll), r);
+              }
+              dbResults = INITIAL_RESULTS;
+            }
+          } catch (e: any) {
+            console.warn("Firestore collection 'results' failed.", e);
+            offlineMode = true;
+            errorMsgStr = e?.message || String(e);
           }
-          dbResults = INITIAL_RESULTS;
         }
 
-        let dbNotices = await fetchNoticesFromFirestore();
-        if (dbNotices.length === 0) {
-          const presetNotices = [
-            {
-              id: "preset-notice-1",
-              title: "কম্পিউটার অফিস অ্যাপ্লিকেশন ১ম মডেল টেস্ট পরীক্ষার সময়সূচী 📢",
-              content: "সম্মানিত শিক্ষার্থীবৃন্দ, আগামী ১৫ই জুন, ২০২৬ তারিখ রোজ রবিবার সকাল ১০:০০ ঘটিকায় আমাদের ল্যাবে কম্পিউটার অফিস অ্যাপ্লিকেশন কোর্সের প্রথম সেশন মডেল টেস্ট পরীক্ষা অনুষ্ঠিত হবে। পরীক্ষায় পাস করার জন্য নূন্যতম ৪০% নম্বর পেতে হবে। সকল নিয়মিত শিক্ষার্থীকে প্রবেশপত্র ও খাতা সহ উপস্থিত থাকার জন্য নির্দেশ দেওয়া যাচ্ছে।",
-              date: "2026-06-09",
-              likesCount: 14,
-            },
-            {
-              id: "preset-notice-2",
-              title: "পবিত্র ঈদুল আযহা উপলক্ষে সরকারি ছুটি ও নোটিশ 🌙",
-              content: "স্বপ্ন কম্পিউটার ট্রেনিং সেন্টারের সকল শিক্ষার্থীদের অবগতির জন্য জানানো যাচ্ছে যে, পবিত্র ঈদুল আযহা উপলক্ষে আগামী ১২ই জুন থেকে ১৭ই জুন পর্যন্ত সকল অফলাইন থিউরি ও প্র্যাক্টিক্যাল ক্লাস বন্ধ থাকবে। আগামী ১৮ই জুন রোজ বৃহস্পতিবার থেকে যথারীতি সব ব্যাচের ক্লাস শুরু হবে। সবাইকে অগ্রিম পবিত্র ঈদ-উল-আযহার শুভেচ্ছা, ঈদ মোবারক!",
-              date: "2026-06-08",
-              likesCount: 25,
+        if (!offlineMode) {
+          try {
+            dbNotices = await fetchNoticesFromFirestore();
+            if (dbNotices.length === 0) {
+              const presetNotices = [
+                {
+                  id: "preset-notice-1",
+                  title: "কম্পিউটার অফিস অ্যাপ্লিকেশন ১ম মডেল টেস্ট পরীক্ষার সময়সূচী 📢",
+                  content: "সম্মানিত শিক্ষার্থীবৃন্দ, আগামী ১৫ই জুন, ২০২৬ তারিখ রোজ রবিবার সকাল ১০:০০ ঘটিকায় আমাদের ল্যাবে কম্পিউটার অফিস অ্যাপ্লিকেশন কোর্সের প্রথম সেশন মডেল টেস্ট পরীক্ষা অনুষ্ঠিত হবে। পরীক্ষায় পাস করার জন্য নূন্যতম ৪০% নম্বর পেতে হবে। সকল নিয়মিত শিক্ষার্থীকে প্রবেশপত্র ও খাতা সহ উপস্থিত থাকার জন্য নির্দেশ দেওয়া যাচ্ছে।",
+                  date: "2026-06-09",
+                  likesCount: 14,
+                },
+                {
+                  id: "preset-notice-2",
+                  title: "পবিত্র ঈদুল আযহা উপলক্ষে সরকারি ছুটি ও নোটিশ 🌙",
+                  content: "স্বপ্ন কম্পিউটার ট্রেনিং সেন্টারের সকল শিক্ষার্থীদের অবগতির জন্য জানানো যাচ্ছে যে, পবিত্র ঈদুল আযহা উপলক্ষে আগামী ১২ই জুন থেকে ১৭ই জুন পর্যন্ত সকল অফলাইন থিউরি ও প্র্যাক্টিক্যাল ক্লাস বন্ধ থাকবে। আগামী ১৮ই জুন রোজ বৃহস্পতিবার থেকে যথারীতি সব ব্যাচের ক্লাস শুরু হবে। সবাইকে অগ্রিম পবিত্র ঈদ-উল-আযহার শুভেচ্ছা, ঈদ মোবারক!",
+                  date: "2026-06-08",
+                  likesCount: 25,
+                }
+              ];
+
+              const notice1Comments = [
+                {
+                  id: "cmt-1",
+                  authorName: "মিনহাজুল কবির",
+                  text: "ইনশাআল্লাহ স্যার, আমরা সবাই প্রস্তুতি নিচ্ছি। পরীক্ষা দেওয়ার জন্য ল্যাবে নির্দিষ্ট পিসি এলোকেশন করা থাকবে কি?",
+                  date: "2026-06-09"
+                },
+                {
+                  id: "cmt-2",
+                  authorName: "সাঈদ স্যার (পরিচালক)",
+                  text: "হ্যাঁ মিনহাজ, ল্যাবের ১ থেকে ১০ নম্বর পিসিতে এই টেস্ট হবে। সকালের ব্যাচের জন্য আলাদা সেট থাকবে।",
+                  date: "2026-06-09"
+                }
+              ];
+
+              const notice2Comments = [
+                {
+                  id: "cmt-3",
+                  authorName: "ফারহানা মিলি",
+                  text: "সবাইকে ঈদ মোবারক! ছুটির পর আবারো ল্যাবে দেখা হবে ইনশাআল্লাহ।",
+                  date: "2026-06-08"
+                }
+              ];
+
+              for (const n of presetNotices) {
+                await setDoc(doc(db, "notices", n.id), n);
+              }
+              for (const c of notice1Comments) {
+                await setDoc(doc(db, "notices/preset-notice-1/comments", c.id), c);
+              }
+              for (const c of notice2Comments) {
+                await setDoc(doc(db, "notices/preset-notice-2/comments", c.id), c);
+              }
+
+              dbNotices = [
+                { ...presetNotices[0], comments: notice1Comments, likedByUser: false },
+                { ...presetNotices[1], comments: notice2Comments, likedByUser: false }
+              ];
             }
-          ];
-
-          const notice1Comments = [
-            {
-              id: "cmt-1",
-              authorName: "মিনহাজুল কবির",
-              text: "ইনশাআল্লাহ স্যার, আমরা সবাই প্রস্তুতি নিচ্ছি। পরীক্ষা দেওয়ার জন্য ল্যাবে নির্দিষ্ট পিসি এলোকেশন করা থাকবে কি?",
-              date: "2026-06-09"
-            },
-            {
-              id: "cmt-2",
-              authorName: "সাঈদ স্যার (পরিচালক)",
-              text: "হ্যাঁ মিনহাজ, ল্যাবের ১ থেকে ১০ নম্বর পিসিতে এই টেস্ট হবে। সকালের ব্যাচের জন্য আলাদা সেট থাকবে।",
-              date: "2026-06-09"
-            }
-          ];
-
-          const notice2Comments = [
-            {
-              id: "cmt-3",
-              authorName: "ফারহানা মিলি",
-              text: "সবাইকে ঈদ মোবারক! ছুটির পর আবারো ল্যাবে দেখা হবে ইনশাআল্লাহ।",
-              date: "2026-06-08"
-            }
-          ];
-
-          for (const n of presetNotices) {
-            await setDoc(doc(db, "notices", n.id), n);
+          } catch (e: any) {
+            console.warn("Firestore collection 'notices' failed.", e);
+            offlineMode = true;
+            errorMsgStr = e?.message || String(e);
           }
-          for (const c of notice1Comments) {
-            await setDoc(doc(db, "notices/preset-notice-1/comments", c.id), c);
-          }
-          for (const c of notice2Comments) {
-            await setDoc(doc(db, "notices/preset-notice-2/comments", c.id), c);
-          }
-
-          dbNotices = [
-            { ...presetNotices[0], comments: notice1Comments, likedByUser: false },
-            { ...presetNotices[1], comments: notice2Comments, likedByUser: false }
-          ];
         }
 
-        let dbMessages = await fetchVisitorMessages();
-        if (dbMessages.length === 0) {
-          const presetMessages = [
-            {
-              id: "preset-1",
-              name: "মোহাম্মদ রাশেদ",
-              mobile: "01819882211",
-              courseOfInterest: "Computer Office Application",
-              message: "আমি ৩ মাসের সার্টিফিকেট কোর্সটি করতে আগ্রহী, সকালের কোনো ব্যাচ আছে কি স্যার?",
-              date: "2026-06-08"
-            },
-            {
-              id: "preset-2",
-              name: "ফারহানা আক্তার মিলি",
-              mobile: "01722667788",
-              courseOfInterest: "Graphic Design & Multimedia",
-              message: "বাসায় প্র্যাকটিসের জন্য কম্পিউটার থাকা কি বাধ্যতামূলক?",
-              date: "2026-06-09"
+        if (!offlineMode) {
+          try {
+            dbMessages = await fetchVisitorMessages();
+            if (dbMessages.length === 0) {
+              const presetMessages = [
+                {
+                  id: "preset-1",
+                  name: "মোহাম্মদ রাশেদ",
+                  mobile: "01819882211",
+                  courseOfInterest: "Computer Office Application",
+                  message: "আমি ৩ মাসের সার্টিফিকেট কোর্সটি করতে আগ্রহী, সকালের কোনো ব্যাচ আছে কি স্যার?",
+                  date: "2026-06-08"
+                },
+                {
+                  id: "preset-2",
+                  name: "ফারহানা আক্তার মিলি",
+                  mobile: "01722667788",
+                  courseOfInterest: "Graphic Design & Multimedia",
+                  message: "বাসায় প্র্যাকটিসের জন্য কম্পিউটার থাকা কি বাধ্যতামূলক?",
+                  date: "2026-06-09"
+                }
+              ];
+              for (const m of presetMessages) {
+                await setDoc(doc(db, "visitorMessages", m.id), m);
+              }
+              dbMessages = presetMessages;
             }
-          ];
-          for (const m of presetMessages) {
-            await setDoc(doc(db, "visitorMessages", m.id), m);
+          } catch (e: any) {
+            console.warn("Firestore collection 'visitorMessages' failed.", e);
+            offlineMode = true;
+            errorMsgStr = e?.message || String(e);
           }
-          dbMessages = presetMessages;
         }
 
-        setStudents(dbStudents);
-        setResults(dbResults);
-        setNotices(dbNotices);
-        setVisitorMessages(dbMessages);
-      } catch (err) {
+        if (offlineMode) {
+          setUsingFallbackLocalStorage(true);
+          try {
+            const parsed = JSON.parse(errorMsgStr);
+            setDbErrorMessage(parsed.error || errorMsgStr);
+          } catch {
+            setDbErrorMessage(errorMsgStr);
+          }
+
+          // Load from LocalStorage
+          const localStudents = localStorage.getItem("swapno_students");
+          const localResults = localStorage.getItem("swapno_results");
+          const localNotices = localStorage.getItem("swapno_notices");
+          const localMessages = localStorage.getItem("swapno_messages");
+
+          if (localStudents) {
+            setStudents(JSON.parse(localStudents));
+          } else {
+            setStudents(INITIAL_STUDENTS);
+            localStorage.setItem("swapno_students", JSON.stringify(INITIAL_STUDENTS));
+          }
+
+          if (localResults) {
+            setResults(JSON.parse(localResults));
+          } else {
+            setResults(INITIAL_RESULTS);
+            localStorage.setItem("swapno_results", JSON.stringify(INITIAL_RESULTS));
+          }
+
+          if (localNotices) {
+            setNotices(JSON.parse(localNotices));
+          } else {
+            const presetNoticesLocal = [
+              {
+                id: "preset-notice-1",
+                title: "কম্পিউটার অফিস অ্যাপ্লিকেশন ১ম মডেল টেস্ট পরীক্ষার সময়সূচী 📢",
+                content: "সম্মানিত শিক্ষার্থীবৃন্দ, আগামী ১৫ই জুন, ২০২৬ তারিখ রোজ রবিবার সকাল ১০:০০ ঘটিকায় আমাদের ল্যাবে কম্পিউটার অফিস অ্যাপ্লিকেশন কোর্সের প্রথম সেশন মডেল টেস্ট পরীক্ষা অনুষ্ঠিত হবে। পরীক্ষায় পাস করার জন্য নূন্যতম ৪০% নম্বর পেতে হবে। সকল নিয়মিত শিক্ষার্থীকে প্রবেশপত্র ও খাতা সহ উপস্থিত থাকার জন্য নির্দেশ দেওয়া যাচ্ছে।",
+                date: "2026-06-09",
+                likesCount: 14,
+                comments: [
+                  {
+                    id: "cmt-1",
+                    authorName: "মিনহাজুল কবির",
+                    text: "ইনশাআল্লাহ স্যার, আমরা সবাই প্রস্তুতি নিচ্ছি। পরীক্ষা দেওয়ার জন্য ল্যাবে নির্দিষ্ট পিসি এলোকেশন করা থাকবে কি?",
+                    date: "2026-06-09"
+                  },
+                  {
+                    id: "cmt-2",
+                    authorName: "সাঈদ স্যার (পরিচালক)",
+                    text: "হ্যাঁ মিনহাজ, ল্যাবের ১ থেকে ১০ নম্বর পিসিতে এই টেস্ট হবে। সকালের ব্যাচের জন্য আলাদা সেট থাকবে।",
+                    date: "2026-06-09"
+                  }
+                ],
+                likedByUser: false
+              },
+              {
+                id: "preset-notice-2",
+                title: "পবিত্র ঈদুল আযহা উপলক্ষে সরকারি ছুটি ও নোটিশ 🌙",
+                content: "স্বপ্ন কম্পিউটার ট্রেনিং সেন্টারের সকল শিক্ষার্থীদের অবগতির জন্য জানানো যাচ্ছে যে, পবিত্র ঈদুল আযহা উপলক্ষে আগামী ১২ই জুন থেকে ১৭ই জুন পর্যন্ত সকল অফলাইন থিউরি ও প্র্যাক্টিক্যাল ক্লাস বন্ধ থাকবে। আগামী ১৮ই জুন রোজ বৃহস্পতিবার থেকে যথারীতি সব ব্যাচের ক্লাস শুরু হবে। সবাইকে অগ্রিম পবিত্র ঈদ-উল-আযহার শুভেচ্ছা, ঈদ মোবারক!",
+                date: "2026-06-08",
+                likesCount: 25,
+                comments: [
+                  {
+                    id: "cmt-3",
+                    authorName: "ফারহানা মিলি",
+                    text: "সবাইকে ঈদ মোবারক! ছুটির পর আবারো ল্যাবে দেখা হবে ইনশাআল্লাহ।",
+                    date: "2026-06-08"
+                  }
+                ],
+                likedByUser: false
+              }
+            ];
+            setNotices(presetNoticesLocal);
+            localStorage.setItem("swapno_notices", JSON.stringify(presetNoticesLocal));
+          }
+
+          if (localMessages) {
+            setVisitorMessages(JSON.parse(localMessages));
+          } else {
+            const presetMessagesLocal = [
+              {
+                id: "preset-1",
+                name: "মোহাম্মদ রাশেদ",
+                mobile: "01819882211",
+                courseOfInterest: "Computer Office Application",
+                message: "আমি ৩ মাসের সার্টিফিকেট কোর্সটি করতে আগ্রহী, সকালের কোনো ব্যাচ আছে কি স্যার?",
+                date: "2026-06-08"
+              },
+              {
+                id: "preset-2",
+                name: "ফারহানা আক্তার মিলি",
+                mobile: "01722667788",
+                courseOfInterest: "Graphic Design & Multimedia",
+                message: "বাসায় প্র্যাকটিসের জন্য কম্পিউটার থাকা কি বাধ্যতামূলক?",
+                date: "2026-06-09"
+              }
+            ];
+            setVisitorMessages(presetMessagesLocal);
+            localStorage.setItem("swapno_messages", JSON.stringify(presetMessagesLocal));
+          }
+        } else {
+          setStudents(dbStudents);
+          setResults(dbResults);
+          setNotices(dbNotices);
+          setVisitorMessages(dbMessages);
+        }
+      } catch (err: any) {
         console.error("Critical error in loadAndSeedData: ", err);
       } finally {
         setLoading(false);
@@ -230,6 +372,17 @@ export default function App() {
       date: new Date().toISOString().split("T")[0],
       likesCount: 0,
     };
+
+    if (usingFallbackLocalStorage) {
+      const fullNotice: Notice = { ...newNotice, comments: [], likedByUser: false };
+      setNotices((prev) => {
+        const next = [fullNotice, ...prev];
+        localStorage.setItem("swapno_notices", JSON.stringify(next));
+        return next;
+      });
+      return;
+    }
+
     try {
       await setDoc(doc(db, "notices", id), newNotice);
       setNotices((prev) => [{ ...newNotice, comments: [] }, ...prev]);
@@ -239,6 +392,14 @@ export default function App() {
   };
 
   const handleDeleteNotice = async (id: string) => {
+    if (usingFallbackLocalStorage) {
+      setNotices((prev) => {
+        const next = prev.filter((n) => n.id !== id);
+        localStorage.setItem("swapno_notices", JSON.stringify(next));
+        return next;
+      });
+      return;
+    }
     try {
       await deleteDoc(doc(db, "notices", id));
       setNotices((prev) => prev.filter((n) => n.id !== id));
@@ -248,6 +409,14 @@ export default function App() {
   };
 
   const handleUpdateNotice = async (updatedNotice: Notice) => {
+    if (usingFallbackLocalStorage) {
+      setNotices((prev) => {
+        const next = prev.map((n) => (n.id === updatedNotice.id ? updatedNotice : n));
+        localStorage.setItem("swapno_notices", JSON.stringify(next));
+        return next;
+      });
+      return;
+    }
     try {
       const { comments, ...sanitizedNotice } = updatedNotice;
       await setDoc(doc(db, "notices", updatedNotice.id), sanitizedNotice);
@@ -260,6 +429,26 @@ export default function App() {
   };
 
   const handleLikeNotice = async (id: string) => {
+    if (usingFallbackLocalStorage) {
+      setNotices((prev) => {
+        const next = prev.map((n) => {
+          if (n.id === id) {
+            const alreadyLiked = n.likedByUser;
+            const newLikesCount = alreadyLiked ? n.likesCount - 1 : n.likesCount + 1;
+            return {
+              ...n,
+              likesCount: newLikesCount,
+              likedByUser: !alreadyLiked
+            };
+          }
+          return n;
+        });
+        localStorage.setItem("swapno_notices", JSON.stringify(next));
+        return next;
+      });
+      return;
+    }
+
     const nIdx = notices.findIndex((n) => n.id === id);
     if (nIdx === -1) return;
     const notice = notices[nIdx];
@@ -294,6 +483,24 @@ export default function App() {
       text: text.trim(),
       date: new Date().toISOString().split("T")[0]
     };
+
+    if (usingFallbackLocalStorage) {
+      setNotices((prev) => {
+        const next = prev.map((n) => {
+          if (n.id === noticeId) {
+            return {
+              ...n,
+              comments: [...n.comments, newComment]
+            };
+          }
+          return n;
+        });
+        localStorage.setItem("swapno_notices", JSON.stringify(next));
+        return next;
+      });
+      return;
+    }
+
     try {
       await setDoc(doc(db, `notices/${noticeId}/comments`, cmtId), newComment);
       setNotices((prev) =>
@@ -313,6 +520,23 @@ export default function App() {
   };
 
   const handleDeleteComment = async (noticeId: string, commentId: string) => {
+    if (usingFallbackLocalStorage) {
+      setNotices((prev) => {
+        const next = prev.map((n) => {
+          if (n.id === noticeId) {
+            return {
+              ...n,
+              comments: n.comments.filter((c) => c.id !== commentId)
+            };
+          }
+          return n;
+        });
+        localStorage.setItem("swapno_notices", JSON.stringify(next));
+        return next;
+      });
+      return;
+    }
+
     try {
       await deleteDoc(doc(db, `notices/${noticeId}/comments`, commentId));
       setNotices((prev) =>
@@ -332,6 +556,15 @@ export default function App() {
   };
 
   const handleAddStudent = async (newStudent: Student) => {
+    if (usingFallbackLocalStorage) {
+      setStudents((prev) => {
+        const next = [newStudent, ...prev];
+        localStorage.setItem("swapno_students", JSON.stringify(next));
+        return next;
+      });
+      return;
+    }
+
     try {
       await setDoc(doc(db, "students", newStudent.roll), newStudent);
       setStudents((prev) => [newStudent, ...prev]);
@@ -341,6 +574,20 @@ export default function App() {
   };
 
   const handleDeleteStudent = async (roll: string) => {
+    if (usingFallbackLocalStorage) {
+      setStudents((prev) => {
+        const next = prev.filter((s) => s.roll !== roll);
+        localStorage.setItem("swapno_students", JSON.stringify(next));
+        return next;
+      });
+      setResults((prev) => {
+        const next = prev.filter((r) => r.roll !== roll);
+        localStorage.setItem("swapno_results", JSON.stringify(next));
+        return next;
+      });
+      return;
+    }
+
     try {
       await deleteDoc(doc(db, "students", roll));
       try {
@@ -354,6 +601,15 @@ export default function App() {
   };
 
   const handleUpdateStudent = async (updatedStudent: Student) => {
+    if (usingFallbackLocalStorage) {
+      setStudents((prev) => {
+        const next = prev.map((s) => (s.roll === updatedStudent.roll ? updatedStudent : s));
+        localStorage.setItem("swapno_students", JSON.stringify(next));
+        return next;
+      });
+      return;
+    }
+
     try {
       await setDoc(doc(db, "students", updatedStudent.roll), updatedStudent);
       setStudents((prev) => prev.map((s) => (s.roll === updatedStudent.roll ? updatedStudent : s)));
@@ -363,6 +619,21 @@ export default function App() {
   };
 
   const handleAddOrUpdateResult = async (newResult: ModelTestResult) => {
+    if (usingFallbackLocalStorage) {
+      setResults((prev) => {
+        const exists = prev.some((r) => r.roll === newResult.roll);
+        let next: ModelTestResult[];
+        if (exists) {
+          next = prev.map((r) => (r.roll === newResult.roll ? newResult : r));
+        } else {
+          next = [newResult, ...prev];
+        }
+        localStorage.setItem("swapno_results", JSON.stringify(next));
+        return next;
+      });
+      return;
+    }
+
     try {
       await setDoc(doc(db, "results", newResult.roll), newResult);
       setResults((prev) => {
@@ -378,6 +649,15 @@ export default function App() {
   };
 
   const handleAddVisitorMessage = async (newMessage: VisitorMessage) => {
+    if (usingFallbackLocalStorage) {
+      setVisitorMessages((prev) => {
+        const next = [newMessage, ...prev];
+        localStorage.setItem("swapno_messages", JSON.stringify(next));
+        return next;
+      });
+      return;
+    }
+
     try {
       await setDoc(doc(db, "visitorMessages", newMessage.id), newMessage);
       setVisitorMessages((prev) => [newMessage, ...prev]);
@@ -541,6 +821,31 @@ export default function App() {
 
       {/* 3. Main Stage Content Container */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        {usingFallbackLocalStorage && (
+          <div className="mb-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 text-left shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-amber-900 no-print">
+            <div className="flex gap-3">
+              <span className="text-xl shrink-0">⚠️</span>
+              <div>
+                <p className="text-xs font-black">অফলাইন স্টোরেজ ব্যাকআপ চালিত (Offline Storage Activated)</p>
+                <p className="text-[11px] text-amber-700 font-medium mt-0.5 leading-relaxed">
+                  ফায়ারবেস ক্লাউড ডাটাবেজ সংযোগে ধীরগতি বা ইন্টারাপ্ট থাকায় বর্তমানে আপনার ব্রাউজারের অফলাইন স্টোরেজ (LocalStorage) সচল করা হয়েছে। নোটিশ বোর্ড, নতুন শিক্ষার্থী ও ফলাফল সংযোজনসহ সম্পূর্ণ এডমিন প্যানেল সচল রয়েছে।
+                </p>
+                {dbErrorMessage && (
+                  <p className="text-[10px] text-amber-600 font-mono mt-1 break-all bg-amber-100/30 py-0.5 px-1.5 rounded">
+                    ত্রুটির বর্ণনা: {dbErrorMessage}
+                  </p>
+                )}
+              </div>
+            </div>
+            <button 
+              onClick={() => window.location.reload()}
+              className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-extrabold text-[10px] rounded-lg transition-all cursor-pointer shrink-0 inline-flex items-center gap-1.5 self-start sm:self-center shadow-xs"
+            >
+              <RefreshCw className="w-3 h-3 text-white" />
+              ডাটাবেজে রিকানেক্ট করুন
+            </button>
+          </div>
+        )}
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-4">
             <RefreshCw className="w-10 h-10 text-indigo-600 animate-spin" />
