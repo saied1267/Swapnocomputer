@@ -91,10 +91,11 @@ export default function HomeNoticeCard({
         <AnimatePresence>
           {showComments && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden pt-4 space-y-4 border-t border-slate-50"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.2 }}
+              className="pt-4 space-y-4 border-t border-slate-50"
             >
               {/* Existing comments list */}
               <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
@@ -121,38 +122,39 @@ export default function HomeNoticeCard({
               </div>
 
               {/* Form to post a new comment */}
-              <form onSubmit={handleSubmitComment} className="bg-slate-50/40 p-3 rounded-xl border border-slate-100 space-y-2.5">
-                <p className="text-[10px] font-bold text-indigo-700 block">মন্তব্য করুন (Add Comment)</p>
+              <form onSubmit={handleSubmitComment} className="bg-slate-50/40 p-3.5 rounded-2xl border border-slate-100 space-y-3">
+                <p className="text-[11px] font-black text-indigo-700 block">মন্তব্য লিখুন (Write Comment)</p>
                 
-                <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex flex-col gap-2.5">
                   <input
                     type="text"
                     placeholder="আপনার নাম (ঐচ্ছিক)"
                     value={commentAuthor}
                     onChange={(e) => setCommentAuthor(e.target.value)}
                     maxLength={30}
-                    className="flex-1 bg-white border border-slate-200 rounded-lg py-1.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all h-11 md:h-10"
                   />
-                  <div className="flex-[3] flex gap-1.5">
+                  <div className="flex gap-2">
                     <input
                       type="text"
                       placeholder="এখানে আপনার মতামত লিখুন..."
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
                       maxLength={150}
-                      className="flex-1 bg-white border border-slate-200 rounded-lg py-1.5 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                      className="flex-1 bg-white border border-slate-200 rounded-xl py-2 px-3.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all h-11 md:h-10"
                     />
                     <button
                       type="submit"
-                      className="bg-indigo-650 hover:bg-indigo-700 text-white rounded-lg p-2 flex items-center justify-center cursor-pointer shadow-xs shrink-0 transition-colors"
+                      className="bg-indigo-650 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl px-4 flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shrink-0 transition-all h-11 md:h-10 text-xs font-extrabold min-w-[70px]"
                       title="মন্তব্য পাঠান"
                     >
                       <Send className="w-3.5 h-3.5" />
+                      <span>পাঠান</span>
                     </button>
                   </div>
                 </div>
                 {commentError && (
-                  <p className="text-[10px] text-rose-600 font-bold leading-none">{commentError}</p>
+                  <p className="text-[10px] text-rose-600 font-bold leading-none pl-1">{commentError}</p>
                 )}
               </form>
             </motion.div>
