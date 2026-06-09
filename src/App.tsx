@@ -796,7 +796,7 @@ export default function App() {
                   <h1 className="text-sm md:text-xl font-black text-slate-800 tracking-tight flex items-center gap-1">
                     স্বপ্ন কম্পিউটার <span className="text-indigo-600 font-normal">IT</span>
                   </h1>
-                  <p className="text-[9px] md:text-xs text-slate-400 font-bold tracking-widest font-mono">SWAPNO Computer • Aman Bazar</p>
+                  <p className="text-[9px] md:text-xs text-slate-400 font-bold tracking-widest font-mono">SWAPNO • AmanBazar</p>
                 </div>
               </div>
 
