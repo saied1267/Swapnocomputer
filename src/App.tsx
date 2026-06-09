@@ -118,11 +118,11 @@ export default function App() {
         // Try testing connection by reading students collection
         try {
           dbStudents = await fetchStudents();
-          if (dbStudents.length === 0) {
+          if (dbStudents.length < 20) {
             for (const s of INITIAL_STUDENTS) {
               await setDoc(doc(db, "students", s.roll), s);
             }
-            dbStudents = INITIAL_STUDENTS;
+            dbStudents = await fetchStudents();
           }
         } catch (e: any) {
           console.warn("Firestore collection 'students' failed. Enforcing offline fallback.", e);
@@ -133,11 +133,11 @@ export default function App() {
         if (!offlineMode) {
           try {
             dbResults = await fetchResults();
-            if (dbResults.length === 0) {
+            if (dbResults.length < 20) {
               for (const r of INITIAL_RESULTS) {
                 await setDoc(doc(db, "results", r.roll), r);
               }
-              dbResults = INITIAL_RESULTS;
+              dbResults = await fetchResults();
             }
           } catch (e: any) {
             console.warn("Firestore collection 'results' failed.", e);
@@ -263,14 +263,26 @@ export default function App() {
           const localMessages = localStorage.getItem("swapno_messages");
 
           if (localStudents) {
-            setStudents(JSON.parse(localStudents));
+            const parsedS = JSON.parse(localStudents);
+            if (parsedS.length < 20) {
+              setStudents(INITIAL_STUDENTS);
+              localStorage.setItem("swapno_students", JSON.stringify(INITIAL_STUDENTS));
+            } else {
+              setStudents(parsedS);
+            }
           } else {
             setStudents(INITIAL_STUDENTS);
             localStorage.setItem("swapno_students", JSON.stringify(INITIAL_STUDENTS));
           }
 
           if (localResults) {
-            setResults(JSON.parse(localResults));
+            const parsedR = JSON.parse(localResults);
+            if (parsedR.length < 20) {
+              setResults(INITIAL_RESULTS);
+              localStorage.setItem("swapno_results", JSON.stringify(INITIAL_RESULTS));
+            } else {
+              setResults(parsedR);
+            }
           } else {
             setResults(INITIAL_RESULTS);
             localStorage.setItem("swapno_results", JSON.stringify(INITIAL_RESULTS));
@@ -362,7 +374,20 @@ export default function App() {
     loadAndSeedData();
   }, []);
 
-  // Synchronizers wrappers
+  // System-wide elegant state backup helper
+  const activateLocalFallback = (err: any, msg: string) => {
+    console.warn(msg, err);
+    setUsingFallbackLocalStorage(true);
+    let rawError = err instanceof Error ? err.message : String(err);
+    try {
+      const parsed = JSON.parse(rawError);
+      setDbErrorMessage(parsed.error || rawError);
+    } catch {
+      setDbErrorMessage(rawError);
+    }
+  };
+
+  // Synchronizers wrappers with automatic self-healing fallback options
   const handleAddNotice = async (title: string, content: string) => {
     const id = "notice-" + Date.now();
     const newNotice: Omit<Notice, "comments"> = {
@@ -373,13 +398,17 @@ export default function App() {
       likesCount: 0,
     };
 
-    if (usingFallbackLocalStorage) {
+    const saveLocally = () => {
       const fullNotice: Notice = { ...newNotice, comments: [], likedByUser: false };
       setNotices((prev) => {
         const next = [fullNotice, ...prev];
         localStorage.setItem("swapno_notices", JSON.stringify(next));
         return next;
       });
+    };
+
+    if (usingFallbackLocalStorage) {
+      saveLocally();
       return;
     }
 
@@ -387,36 +416,48 @@ export default function App() {
       await setDoc(doc(db, "notices", id), newNotice);
       setNotices((prev) => [{ ...newNotice, comments: [] }, ...prev]);
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, `notices/${id}`);
+      activateLocalFallback(err, "Cloud database write notice failed. Storing locally.");
+      saveLocally();
     }
   };
 
   const handleDeleteNotice = async (id: string) => {
-    if (usingFallbackLocalStorage) {
+    const deleteLocally = () => {
       setNotices((prev) => {
         const next = prev.filter((n) => n.id !== id);
         localStorage.setItem("swapno_notices", JSON.stringify(next));
         return next;
       });
+    };
+
+    if (usingFallbackLocalStorage) {
+      deleteLocally();
       return;
     }
+
     try {
       await deleteDoc(doc(db, "notices", id));
       setNotices((prev) => prev.filter((n) => n.id !== id));
     } catch (err) {
-      handleFirestoreError(err, OperationType.DELETE, `notices/${id}`);
+      activateLocalFallback(err, "Cloud database delete notice failed. Removing locally.");
+      deleteLocally();
     }
   };
 
   const handleUpdateNotice = async (updatedNotice: Notice) => {
-    if (usingFallbackLocalStorage) {
+    const updateLocally = () => {
       setNotices((prev) => {
         const next = prev.map((n) => (n.id === updatedNotice.id ? updatedNotice : n));
         localStorage.setItem("swapno_notices", JSON.stringify(next));
         return next;
       });
+    };
+
+    if (usingFallbackLocalStorage) {
+      updateLocally();
       return;
     }
+
     try {
       const { comments, ...sanitizedNotice } = updatedNotice;
       await setDoc(doc(db, "notices", updatedNotice.id), sanitizedNotice);
@@ -424,17 +465,22 @@ export default function App() {
         prev.map((n) => (n.id === updatedNotice.id ? updatedNotice : n))
       );
     } catch (err) {
-      handleFirestoreError(err, OperationType.UPDATE, `notices/${updatedNotice.id}`);
+      activateLocalFallback(err, "Cloud database update notice failed. Syncing locally.");
+      updateLocally();
     }
   };
 
   const handleLikeNotice = async (id: string) => {
-    if (usingFallbackLocalStorage) {
+    const nIdx = notices.findIndex((n) => n.id === id);
+    if (nIdx === -1) return;
+    const notice = notices[nIdx];
+    const alreadyLiked = notice.likedByUser;
+    const newLikesCount = alreadyLiked ? notice.likesCount - 1 : notice.likesCount + 1;
+
+    const likeLocally = () => {
       setNotices((prev) => {
         const next = prev.map((n) => {
           if (n.id === id) {
-            const alreadyLiked = n.likedByUser;
-            const newLikesCount = alreadyLiked ? n.likesCount - 1 : n.likesCount + 1;
             return {
               ...n,
               likesCount: newLikesCount,
@@ -446,14 +492,13 @@ export default function App() {
         localStorage.setItem("swapno_notices", JSON.stringify(next));
         return next;
       });
+    };
+
+    if (usingFallbackLocalStorage) {
+      likeLocally();
       return;
     }
 
-    const nIdx = notices.findIndex((n) => n.id === id);
-    if (nIdx === -1) return;
-    const notice = notices[nIdx];
-    const alreadyLiked = notice.likedByUser;
-    const newLikesCount = alreadyLiked ? notice.likesCount - 1 : notice.likesCount + 1;
     try {
       await updateDoc(doc(db, "notices", id), {
         likesCount: newLikesCount
@@ -471,7 +516,8 @@ export default function App() {
         })
       );
     } catch (err) {
-      handleFirestoreError(err, OperationType.UPDATE, `notices/${id}`);
+      activateLocalFallback(err, "Cloud database like notice failed. Storing locally.");
+      likeLocally();
     }
   };
 
@@ -484,7 +530,7 @@ export default function App() {
       date: new Date().toISOString().split("T")[0]
     };
 
-    if (usingFallbackLocalStorage) {
+    const addCommentLocally = () => {
       setNotices((prev) => {
         const next = prev.map((n) => {
           if (n.id === noticeId) {
@@ -498,6 +544,10 @@ export default function App() {
         localStorage.setItem("swapno_notices", JSON.stringify(next));
         return next;
       });
+    };
+
+    if (usingFallbackLocalStorage) {
+      addCommentLocally();
       return;
     }
 
@@ -515,12 +565,13 @@ export default function App() {
         })
       );
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, `notices/${noticeId}/comments/${cmtId}`);
+      activateLocalFallback(err, "Cloud database add comment failed. Saving locally.");
+      addCommentLocally();
     }
   };
 
   const handleDeleteComment = async (noticeId: string, commentId: string) => {
-    if (usingFallbackLocalStorage) {
+    const deleteCommentLocally = () => {
       setNotices((prev) => {
         const next = prev.map((n) => {
           if (n.id === noticeId) {
@@ -534,6 +585,10 @@ export default function App() {
         localStorage.setItem("swapno_notices", JSON.stringify(next));
         return next;
       });
+    };
+
+    if (usingFallbackLocalStorage) {
+      deleteCommentLocally();
       return;
     }
 
@@ -551,17 +606,22 @@ export default function App() {
         })
       );
     } catch (err) {
-      handleFirestoreError(err, OperationType.DELETE, `notices/${noticeId}/comments/${commentId}`);
+      activateLocalFallback(err, "Cloud database delete comment failed. Removing locally.");
+      deleteCommentLocally();
     }
   };
 
   const handleAddStudent = async (newStudent: Student) => {
-    if (usingFallbackLocalStorage) {
+    const addStudentLocally = () => {
       setStudents((prev) => {
         const next = [newStudent, ...prev];
         localStorage.setItem("swapno_students", JSON.stringify(next));
         return next;
       });
+    };
+
+    if (usingFallbackLocalStorage) {
+      addStudentLocally();
       return;
     }
 
@@ -569,12 +629,13 @@ export default function App() {
       await setDoc(doc(db, "students", newStudent.roll), newStudent);
       setStudents((prev) => [newStudent, ...prev]);
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, `students/${newStudent.roll}`);
+      activateLocalFallback(err, "Cloud database add student failed. Saving locally.");
+      addStudentLocally();
     }
   };
 
   const handleDeleteStudent = async (roll: string) => {
-    if (usingFallbackLocalStorage) {
+    const deleteStudentLocally = () => {
       setStudents((prev) => {
         const next = prev.filter((s) => s.roll !== roll);
         localStorage.setItem("swapno_students", JSON.stringify(next));
@@ -585,6 +646,10 @@ export default function App() {
         localStorage.setItem("swapno_results", JSON.stringify(next));
         return next;
       });
+    };
+
+    if (usingFallbackLocalStorage) {
+      deleteStudentLocally();
       return;
     }
 
@@ -596,17 +661,22 @@ export default function App() {
       setStudents((prev) => prev.filter((s) => s.roll !== roll));
       setResults((prev) => prev.filter((r) => r.roll !== roll));
     } catch (err) {
-      handleFirestoreError(err, OperationType.DELETE, `students/${roll}`);
+      activateLocalFallback(err, "Cloud database delete student failed. Removing locally.");
+      deleteStudentLocally();
     }
   };
 
   const handleUpdateStudent = async (updatedStudent: Student) => {
-    if (usingFallbackLocalStorage) {
+    const updateStudentLocally = () => {
       setStudents((prev) => {
         const next = prev.map((s) => (s.roll === updatedStudent.roll ? updatedStudent : s));
         localStorage.setItem("swapno_students", JSON.stringify(next));
         return next;
       });
+    };
+
+    if (usingFallbackLocalStorage) {
+      updateStudentLocally();
       return;
     }
 
@@ -614,12 +684,13 @@ export default function App() {
       await setDoc(doc(db, "students", updatedStudent.roll), updatedStudent);
       setStudents((prev) => prev.map((s) => (s.roll === updatedStudent.roll ? updatedStudent : s)));
     } catch (err) {
-      handleFirestoreError(err, OperationType.UPDATE, `students/${updatedStudent.roll}`);
+      activateLocalFallback(err, "Cloud database update student failed. Saving locally.");
+      updateStudentLocally();
     }
   };
 
   const handleAddOrUpdateResult = async (newResult: ModelTestResult) => {
-    if (usingFallbackLocalStorage) {
+    const addOrUpdateResultLocally = () => {
       setResults((prev) => {
         const exists = prev.some((r) => r.roll === newResult.roll);
         let next: ModelTestResult[];
@@ -631,6 +702,10 @@ export default function App() {
         localStorage.setItem("swapno_results", JSON.stringify(next));
         return next;
       });
+    };
+
+    if (usingFallbackLocalStorage) {
+      addOrUpdateResultLocally();
       return;
     }
 
@@ -644,17 +719,22 @@ export default function App() {
         return [newResult, ...prev];
       });
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, `results/${newResult.roll}`);
+      activateLocalFallback(err, "Cloud database create/update result failed. Storing locally.");
+      addOrUpdateResultLocally();
     }
   };
 
   const handleAddVisitorMessage = async (newMessage: VisitorMessage) => {
-    if (usingFallbackLocalStorage) {
+    const addMessageLocally = () => {
       setVisitorMessages((prev) => {
         const next = [newMessage, ...prev];
         localStorage.setItem("swapno_messages", JSON.stringify(next));
         return next;
       });
+    };
+
+    if (usingFallbackLocalStorage) {
+      addMessageLocally();
       return;
     }
 
@@ -662,7 +742,8 @@ export default function App() {
       await setDoc(doc(db, "visitorMessages", newMessage.id), newMessage);
       setVisitorMessages((prev) => [newMessage, ...prev]);
     } catch (err) {
-      handleFirestoreError(err, OperationType.CREATE, `visitorMessages/${newMessage.id}`);
+      activateLocalFallback(err, "Cloud database add message failed. Saving locally.");
+      addMessageLocally();
     }
   };
 
