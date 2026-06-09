@@ -765,7 +765,7 @@ export default function App() {
           {/* Authentic Scrolling Marquee */}
           <div className="whitespace-nowrap overflow-hidden relative w-full">
             <span className="inline-block pl-[100%] animate-[marquee_25s_linear_infinite] hover:[animation-play-state:paused] cursor-pointer">
-              স্বপ্ন কম্পিউটার ট্রেনিং সেন্টারে নতুন সেশনে (কম্পিউটার অফিস অ্যাপ্লিকেশন, গ্রাফিক ডিজাইন, ও প্রফেশনাল ওয়েব ডেভেলপমেন্ট) আকর্ষণীয় ছাড়ে ভর্তি চলছে! যোগাযোগ করুন: ০১৯৪১৬৫২০৯৭ / ০১৮৩০০৩৪৮৮। পরিচালক: মোহাম্মদ সাঈদ স্যার।
+              স্বপ্ন কম্পিউটার ট্রেনিং সেন্টারে নতুন সেশনে (কম্পিউটার অফিস অ্যাপ্লিকেশন, গ্রাফিক ডিজাইন, ও প্রফেশনাল ওয়েব ডেভেলপমেন্ট) আকর্ষণীয় ছাড়ে ভর্তি চলছে! যোগাযোগ করুন: ০১৯৪১৬৫২০৯৭ / 01941652097 পরিচালক: মোহাম্মদ সাঈদ স্যার।
             </span>
           </div>
         </div>
@@ -816,7 +816,7 @@ export default function App() {
             {/* Desktop Nav Items */}
             <nav className="hidden md:flex items-center gap-1">
               {[
-                { id: "home", label: "হোম পেইজ" },
+                { id: "home", label: "Home" },
                 { id: "courses", label: "কোর্স ও এডমিশন" },
                 { id: "results", label: "ফলাফল চেক" },
                 { id: "about", label: "ল্যাব পরিচিতি" },
@@ -845,7 +845,7 @@ export default function App() {
                     : "border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-rose-600"
                 }`}
               >
-                অফিস প্যানেল
+                অফিস প্যানেল (Only Sir)
                 {visitorMessages.length > 0 && (
                   <span className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 bg-red-650 text-white rounded-full flex items-center justify-center text-[9px] font-black tracking-normal">
                     {visitorMessages.length}
@@ -930,8 +930,8 @@ export default function App() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-4">
             <RefreshCw className="w-10 h-10 text-indigo-600 animate-spin" />
-            <p className="text-sm font-bold text-slate-600">ক্লাউড ডাটাবেজ সংযোগ প্রতিস্থাপন করা হচ্ছে...</p>
-            <p className="text-xs text-slate-400">স্বপ্ন কম্পিউটার ইনস্টিটিউট লাইভ ডাটাবেজ লোড করা হচ্ছে...</p>
+            <p className="text-sm font-bold text-slate-600">সাঈদ এআই ডাটাবেজ এর সাথে সংযোগ করা হচ্ছে...</p>
+            <p className="text-xs text-slate-400">স্বপ্ন কারিগরি কম্পিউটার প্রশিক্ষণ কেন্দ্র ডাটাবেজ লোড করা হচ্ছে...</p>
           </div>
         ) : (
           <AnimatePresence mode="wait">
@@ -950,7 +950,7 @@ export default function App() {
                 <div className="lg:col-span-7 space-y-6 text-left z-10">
                   <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-750 px-3.5 py-1.5 rounded-full text-xs font-bold">
                     <Flame className="w-3.5 h-3.5 text-rose-500" />
-                    হাটহাজারীর বিশ্বস্ত কম্পিউটার উইং
+                    আমান বাজার বিশ্বস্ত কম্পিউটার প্রশিক্ষণ কেন্দ্র 
                   </div>
                   <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
                     কম্পিউটার শিখুন, <br />
@@ -959,7 +959,7 @@ export default function App() {
                     </span> গড়ুন।
                   </h2>
                   <p className="text-slate-600 text-sm md:text-base leading-relaxed max-w-lg">
-                    স্বপ্ন কারিগরি ও কম্পিউটার সেন্টারে সম্পূর্ণ কোলাহলমুক্ত নিরিবিলি পরিবেশে আপনি পাচ্ছেন প্রফেশনাল কোর্স সুবিধা। আমাদের ল্যাবে প্রজেক্টর এবং ডেডিকেটেড হাই-কনফিগার কম্পিউটার রয়েছে। 
+                    স্বপ্ন কারিগরি ও কম্পিউটার সেন্টারে সম্পূর্ণ কোলাহলমুক্ত নিরিবিলি পরিবেশে আপনি পাচ্ছেন প্রফেশনাল কোর্স সুবিধা। 
                   </p>
                   
                   {/* CTA Buttons */}
@@ -983,11 +983,11 @@ export default function App() {
                   <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-100 text-left font-mono">
                     <div>
                       <strong className="text-xl md:text-2xl font-black text-slate-800">৫০০+</strong>
-                      <p className="text-[10px] text-slate-400 font-sans font-bold uppercase mt-0.5">সফল গ্র্যাজুয়েট</p>
+                      <p className="text-[10px] text-slate-400 font-sans font-bold uppercase mt-0.5">সফল কোর্স সম্পন্নকারী</p>
                     </div>
                     <div>
                       <strong className="text-xl md:text-2xl font-black text-slate-800">৪ টি</strong>
-                      <p className="text-[10px] text-slate-400 font-sans font-bold uppercase mt-0.5">আইটি কোর্স</p>
+                      <p className="text-[10px] text-slate-400 font-sans font-bold uppercase mt-0.5">অফিস কোর্স</p>
                     </div>
                     <div>
                       <strong className="text-xl md:text-2xl font-black text-slate-800">১:১</strong>
@@ -1005,9 +1005,9 @@ export default function App() {
                         <Cpu className="w-8 h-8" />
                       </div>
                       <div className="space-y-1">
-                        <strong className="font-extrabold text-slate-800 text-sm md:text-base block">আইটি ল্যাব ট্রেনিং সেন্টার পোর্টাল</strong>
+                        <strong className="font-extrabold text-slate-800 text-sm md:text-base block">স্বপ্ন কম্পিউটার ট্রেনিং সেন্টার পোর্টাল</strong>
                         <p className="text-xs text-slate-550 max-w-xs mx-auto">
-                          সকল শিক্ষার্থীর প্র্যাক্টিক্যাল অনুশীলন ডাটাবেজ ট্র্যাক করতে এবং ডিজিটাল সার্টিফিকেট নিশ্চিত করতে আমাদের নতুন স্বয়ংক্রিয় ক্লাউড হাব।
+                          সকল শিক্ষার্থীর প্র্যাক্টিক্যাল অনুশীলন ডাটাবেজ ট্র্যাক করতে এবং ডিজিটাল সার্টিফিকেট নিশ্চিত করতে সাঈদ এআই গুরুত্বপূর্ণ ভূমিকা পালন করে।
                         </p>
                       </div>
                     </div>
@@ -1018,7 +1018,7 @@ export default function App() {
               {/* Core Features Grid */}
               <div className="space-y-4">
                 <div className="text-left border-b border-slate-100 pb-2">
-                  <h3 className="font-extrabold text-slate-800 text-base md:text-lg">আমাদের প্রধান কোর্স কারিকুলাম সমূহ</h3>
+                  <h3 className="font-extrabold text-slate-800 text-base md:text-lg">আমাদের প্রধান কোর্স সমূহ</h3>
                   <p className="text-xs text-slate-500">স্বাবলম্বী স্বাধীন ক্যারিয়ার শুরু করার জন্য সেরা প্রোগ্রাম সমূহ বেছে নিন।</p>
                 </div>
 
@@ -1058,7 +1058,7 @@ export default function App() {
                     <div>
                       <h3 className="font-extrabold text-slate-800 text-base md:text-lg flex items-center gap-1.5 leading-snug">
                         <Sparkles className="w-4.5 h-4.5 text-indigo-600 shrink-0" />
-                        ইনস্টিটিউট লাইভ নোটিশ বোর্ড (Notice Board)
+                        ইনস্টিটিউট নোটিশ বোর্ড (Notice Board)
                       </h3>
                       <p className="text-[11px] text-slate-400 mt-0.5 leading-none">
                         সাঈদ স্যার কর্তৃক প্রকাশিত নিয়মিত তথ্যাবলী ও শিক্ষার্থীবৃন্দের মন্তব্য সেশন।
@@ -1098,12 +1098,12 @@ export default function App() {
                 <div className="space-y-2">
                   <h4 className="font-extrabold text-slate-800 text-sm md:text-base flex items-center gap-1.5 leading-snug">
                     <UserCheck className="w-4 h-4 text-indigo-600" />
-                    পরিচালকের ডেক্স থেকে মোহাম্মদ সাঈদ স্যারের শুভেচ্ছা বার্তা
+                    পরিচালকের পক্ষ থেকে মোহাম্মদ সাঈদ স্যার ও আসাদ স্যারের শুভেচ্ছা বার্তা
                   </h4>
                   <p className="text-slate-650 italic text-xs md:text-sm leading-relaxed">
                     "প্রিয় তরুণ বন্ধুরা, কম্পিউটার শিক্ষা কোনো বিলাসীতা নয় বরং এটি আধুনিক স্বাবলম্বী হওয়ার মূল হাতিয়ার। স্বপ্ন কম্পিউটারে আমরা কোনো জটিলতা ছাড়া অত্যন্ত সহজ ভাষায় চট্টগ্রামের আঞ্চলিক আবেগের সাথে মিশে বাস্তব প্র্যাক্টিক্যাল শিক্ষা প্রদান করি। আপনাদের দক্ষ গড়ে তোলাই আমার একমাত্র স্বপ্ন।"
                   </p>
-                  <p className="text-[10px] text-slate-400 font-bold block">মোহাম্মদ সাঈদ • পরিচালক, স্বপ্ন টেকনিক্যাল রূপকার কম্পিউটার</p>
+                  <p className="text-[10px] text-slate-400 font-bold block">মোহাম্মদ সাঈদ • পরিচালক, স্বপ্ন টেকনিক্যাল  কম্পিউটার</p>
                 </div>
               </div>
 
@@ -1187,7 +1187,7 @@ export default function App() {
               <strong className="text-sm font-bold">স্বপ্ন কম্পিউটার ট্রেনিং</strong>
             </div>
             <p className="text-slate-400 text-xs leading-relaxed">
-              স্বাবলম্বী ক্যারিয়ার গড়ার লক্ষ্যে চট্টগ্রামের হাটহাজারী উপজেলার আমান বাজারে প্রতিষ্ঠিত স্বপ্ন কম্পিউটার আইটি সর্বদা মানসম্মত এবং যুগোপযোগী কম্পিউটার প্রশিক্ষণ দিয়ে আসছে।
+              স্বাবলম্বী ক্যারিয়ার গড়ার লক্ষ্যে চট্টগ্রামের হাটহাজারী উপজেলার আমান বাজারে প্রতিষ্ঠিত স্বপ্ন কম্পিউটার প্রশিক্ষণ কেন্দ্র সর্বদা মানসম্মত এবং যুগোপযোগী কম্পিউটার প্রশিক্ষণ দিয়ে আসছে।
             </p>
           </div>
 
@@ -1206,25 +1206,25 @@ export default function App() {
             <div className="flex flex-col gap-1 text-xs">
               <button onClick={() => navigateTo("results")} className="text-left text-slate-405 hover:text-indigo-400">পরীক্ষার ফলাফল অনুসন্ধান</button>
               <button onClick={() => navigateTo("courses")} className="text-left text-slate-405 hover:text-indigo-400">নতুন ভর্তি রিকোয়েস্ট</button>
-              <button onClick={() => navigateTo("about")} className="text-left text-slate-405 hover:text-indigo-400">ল্যাব রুট ম্যাপ অবস্থান</button>
+              <button onClick={() => navigateTo("about")} className="text-left text-slate-405 hover:text-indigo-400"> অবস্থান</button>
               <button onClick={() => navigateTo("admin")} className="text-left text-slate-405 hover:text-indigo-400 font-bold text-rose-450">অফিস এডমিন প্যানেল</button>
             </div>
           </div>
 
           <div className="space-y-3 text-left">
-            <strong className="text-white text-xs block font-bold mb-2">গরম নম্বর (Hotline)</strong>
+            <strong className="text-white text-xs block font-bold mb-2">যোগাযোগ (Hotline)</strong>
             <p className="text-xs">পরিচালক সরাসরি:</p>
-            <strong className="text-sm font-mono text-emerald-450 block font-bold">০১৯৪১৬৫২০৯৭</strong>
-            <p className="text-[10px] text-slate-500">আমান বাজার তরাইল মোড় সংলগ্ন রোড, হাটহাজারী, চট্টগ্রাম।</p>
+            <strong className="text-sm font-mono text-emerald-450 block font-bold">০১৯৪১৬৫২০৯৭ | 01941652097</strong>
+            <p className="text-[10px] text-slate-500">আমান বাজার কলেজ রোড রোড, ইব্রাহিম মার্কেট ২য় তলা, হাটহাজারী, চট্টগ্রাম।</p>
           </div>
 
         </div>
 
         {/* Base line licensing */}
         <div className="max-w-7xl mx-auto px-4 border-t border-slate-800 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center text-left text-[11px] text-slate-500 gap-4">
-          <p>© {new Date().getFullYear()} স্বপ্ন কারিগরি কম্পিউটার ও আইটি ট্রেনিং ইনস্টিটিউট। সর্বস্বত্ব সংরক্ষিত।</p>
+          <p>© {new Date().getFullYear()} স্বপ্ন কারিগরি কম্পিউটার ট্রেনিং সেন্টার। সাঈদ কর্তৃক সংরক্ষিত।</p>
           <div className="flex items-center gap-1 font-mono">
-            <span>স্থাপিত ২০১৯</span>
+            <span>স্থাপিত ২০২৫</span>
             <span>•</span>
             <span className="text-indigo-450 animate-pulse">স্মার্ট বাংলাদেশ অর্জনে সংকল্পবদ্ধ</span>
           </div>
