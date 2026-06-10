@@ -38,7 +38,7 @@ export default function StudentShowcase({ students }: StudentShowcaseProps) {
         <div>
           <h3 className="font-extrabold text-slate-800 text-base md:text-lg flex items-center gap-1.5 leading-snug">
             <UserCheck className="w-4 h-4 text-emerald-600" />
-            আমাদের চটজলদি শিক্ষার্থী গ্যালারি
+            আমাদের শিক্ষার্থীরা
           </h3>
           <p className="text-[11px] text-slate-400 mt-0.5 leading-none">
             স্বপ্ন আইটি থেকে দক্ষ হয়ে ওঠা প্রিয় ছাত্র-ছাত্রীদের তালিকা ও ছবিসমূহ।
