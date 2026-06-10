@@ -32,6 +32,7 @@ export interface ModelTestResult {
   roll: string;
   name: string;
   course: string;
+  examType?: "model_test" | "final_exam";
   mcqMarks: number;     // out of 50
   practicalMarks: number; // out of 40
   vivaMarks: number;      // out of 10
