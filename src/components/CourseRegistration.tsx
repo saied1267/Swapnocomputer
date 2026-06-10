@@ -172,7 +172,7 @@ export default function CourseRegistration({ onAddVisitorMessage }: CourseRegist
       {/* Course Catalog (Below the form) */}
       <div className="space-y-8">
         <div className="text-center md:text-left border-b border-slate-100 pb-3">
-          <h3 className="text-xl font-extrabold text-slate-800">আমাদের প্রফেশনাল আইটি কোর্সসমূহ</h3>
+          <h3 className="text-xl font-extrabold text-slate-800">আমাদের প্রফেশনাল কম্পিউটার কোর্সসমূহ</h3>
           <p className="text-xs text-slate-500 mt-1">ভর্তির জন্য আপনি নিচের যেকোনো কোর্সটি পছন্দ করতে পারেন।</p>
         </div>
 
@@ -243,7 +243,7 @@ export default function CourseRegistration({ onAddVisitorMessage }: CourseRegist
             </span>
             <h4 className="text-xl font-extrabold text-white">গরীব ও মেধারী শিক্ষার্থীদের জন্য বিশেষ ছাড়!</h4>
             <p className="text-slate-300 text-sm leading-relaxed max-w-sm">
-              স্বপ্ন আইটিতে দরিদ্র ও অসচ্ছল পরিবারের উদ্যোমী সন্তানদের কম্পিউটার শিক্ষার প্রসারে পরিচালক সাঈদ স্যারের পক্ষ থেকে ফি ছাড়ের সুযোগ রয়েছে।
+              স্বপ্ন কম্পিউটার প্রশিক্ষন কেন্দ্র দরিদ্র ও অসচ্ছল পরিবারের উদ্যোমী সন্তানদের কম্পিউটার শিক্ষার প্রসারে পরিচালক সাঈদ স্যারের পক্ষ থেকে ফি ছাড়ের সুযোগ রয়েছে।
             </p>
           </div>
           <div className="bg-slate-800 p-4 rounded-2xl border border-slate-750 text-center shrink-0 w-full md:w-auto z-10">
