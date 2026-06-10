@@ -65,8 +65,9 @@ export default function HomeNoticeCard({
         {/* Action Row */}
         <div className="pt-4 border-t border-slate-50 flex items-center justify-between text-xs font-bold text-slate-500">
           <button
+            type="button"
             onClick={() => onLike(notice.id)}
-            className={`flex items-center gap-2 px-35 py-1.5 rounded-lg transition-all select-none hover:bg-slate-50 ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg transition-all hover:bg-slate-50 ${
               notice.likedByUser
                 ? "text-rose-500 bg-rose-50/40 hover:bg-rose-50"
                 : "text-slate-500 hover:text-slate-700"
@@ -77,8 +78,9 @@ export default function HomeNoticeCard({
           </button>
 
           <button
+            type="button"
             onClick={() => setShowComments(!showComments)}
-            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg transition-all select-none hover:bg-slate-50 ${
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg transition-all hover:bg-slate-50 ${
               showComments ? "text-indigo-650 bg-indigo-50/40" : "hover:text-slate-700"
             }`}
           >
@@ -100,13 +102,13 @@ export default function HomeNoticeCard({
               {/* Existing comments list */}
               <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
                 {notice.comments.length === 0 ? (
-                  <p className="text-center text-[11px] text-slate-400 font-medium py-3 italic">
+                  <p className="text-center text-[11px] text-slate-455 font-medium py-3 italic">
                     এখনো কোনো মন্তব্য করা হয়নি। প্রথম মন্তব্যটি আপনিই করুন!
                   </p>
                 ) : (
                   notice.comments.map((comment) => (
                     <div key={comment.id} className="flex gap-2.5 items-start bg-slate-50/60 p-3 rounded-xl border border-slate-100">
-                      <div className="w-7 h-7 rounded-full bg-slate-205 text-slate-600 flex items-center justify-center font-bold text-xs shrink-0 select-none bg-indigo-50 text-indigo-700">
+                      <div className="w-7 h-7 rounded-full bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-xs shrink-0 select-none">
                         <User className="w-3.5 h-3.5" />
                       </div>
                       <div className="flex-1 space-y-1">
@@ -114,7 +116,7 @@ export default function HomeNoticeCard({
                           <strong className="text-slate-800 text-xs font-extrabold">{comment.authorName}</strong>
                           <span className="text-[9px] text-slate-400 font-mono">{comment.date}</span>
                         </div>
-                        <p className="text-slate-600 text-xs leading-relaxed">{comment.text}</p>
+                        <p className="text-slate-650 text-xs leading-relaxed">{comment.text}</p>
                       </div>
                     </div>
                   ))
@@ -132,20 +134,20 @@ export default function HomeNoticeCard({
                     value={commentAuthor}
                     onChange={(e) => setCommentAuthor(e.target.value)}
                     maxLength={30}
-                    className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all h-11 md:h-10"
+                    className="w-full bg-white border border-slate-200 rounded-xl py-2 px-3.5 text-base md:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all h-11"
                   />
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 w-full font-sans">
                     <input
                       type="text"
                       placeholder="এখানে আপনার মতামত লিখুন..."
                       value={commentText}
                       onChange={(e) => setCommentText(e.target.value)}
                       maxLength={150}
-                      className="flex-1 bg-white border border-slate-200 rounded-xl py-2 px-3.5 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all h-11 md:h-10"
+                      className="flex-1 min-w-0 bg-white border border-slate-200 rounded-xl py-2 px-3.5 text-base md:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all h-11"
                     />
                     <button
                       type="submit"
-                      className="bg-indigo-650 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl px-4 flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shrink-0 transition-all h-11 md:h-10 text-xs font-extrabold min-w-[70px]"
+                      className="bg-indigo-650 hover:bg-indigo-700 active:bg-indigo-800 text-white rounded-xl px-4 flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shrink-0 transition-all h-11 text-xs font-black min-w-[80px]"
                       title="মন্তব্য পাঠান"
                     >
                       <Send className="w-3.5 h-3.5" />
