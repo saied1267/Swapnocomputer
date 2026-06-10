@@ -5,14 +5,18 @@ import {
   MapPin, ChevronDown, ChevronUp, Phone, User, Award, Hash, CreditCard,
   Lock, Unlock, Eye, EyeOff, AlertCircle, Sparkles
 } from "lucide-react";
-import { Student } from "../types";
+import { Student, ModelTestResult } from "../types";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { RefreshCw, Download } from "lucide-react";
 
 interface StudentShowcaseProps {
   students: Student[];
+  results?: ModelTestResult[];
   isAdmin?: boolean;
 }
 
-export default function StudentShowcase({ students, isAdmin = false }: StudentShowcaseProps) {
+export default function StudentShowcase({ students, results = [], isAdmin = false }: StudentShowcaseProps) {
   const [search, setSearch] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("all");
   const [expandedStudentRoll, setExpandedStudentRoll] = useState<string | null>(null);
@@ -78,6 +82,65 @@ export default function StudentShowcase({ students, isAdmin = false }: StudentSh
 
   const togglePinVisibilityLocal = (studentRoll: string) => {
     setShowPins(prev => ({ ...prev, [studentRoll]: !prev[studentRoll] }));
+  };
+
+  const [generatingPdfRoll, setGeneratingPdfRoll] = useState<string | null>(null);
+
+  const handleDownloadStudentPDF = async (student: Student, result: ModelTestResult) => {
+    const elementId = `result-card-id-${student.roll}`;
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    
+    setGeneratingPdfRoll(student.roll);
+    
+    try {
+      const canvas = await html2canvas(element, { 
+        scale: 3, 
+        useCORS: true, 
+        backgroundColor: "#ffffff",
+        windowWidth: 1200,
+        onclone: (clonedDoc) => {
+          const clonedEl = clonedDoc.getElementById(elementId);
+          if (clonedEl) {
+            clonedEl.style.display = "block";
+            clonedEl.style.padding = "20px";
+          }
+        }
+      });
+      
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      
+      const margin = 10;
+      const maxWidth = pdfWidth - (margin * 2);
+      const maxHeight = pdfHeight - (margin * 2);
+      const ratio = canvas.width / canvas.height;
+      
+      let finalWidth = maxWidth;
+      let finalHeight = finalWidth / ratio;
+      
+      if (finalHeight > maxHeight) {
+        finalHeight = maxHeight;
+        finalWidth = finalHeight * ratio;
+      }
+      
+      const x = (pdfWidth - finalWidth) / 2;
+      const y = (pdfHeight - finalHeight) / 2;
+      
+      pdf.setDrawColor(79, 70, 229);
+      pdf.setLineWidth(1);
+      pdf.rect(5, 5, pdfWidth - 10, pdfHeight - 10);
+      
+      pdf.addImage(imgData, "PNG", x, y, finalWidth, finalHeight);
+      pdf.save(`swapno-it-${student.roll}-result.pdf`);
+    } catch (error) {
+      console.error(error);
+      alert("PDF download failed.");
+    } finally {
+      setGeneratingPdfRoll(null);
+    }
   };
 
   return (
@@ -341,8 +404,48 @@ export default function StudentShowcase({ students, isAdmin = false }: StudentSh
                                 </div>
                               </div>
 
+                              {/* Student Results Display */}
+                              {(() => {
+                                const studentResult = results.find(r => r.roll === student.roll);
+                                if (!studentResult) return null;
+                                return (
+                                  <div className="bg-emerald-50/50 border border-emerald-100 rounded-xl p-4 mt-4 space-y-3">
+                                    <div className="flex items-center justify-between">
+                                      <h5 className="font-extrabold text-emerald-900 text-xs flex items-center gap-1.5">
+                                        <Award className="w-4 h-4 text-emerald-600" />
+                                        {studentResult.examType === "final_exam" ? "ফাইনাল বোর্ড ফলাফল" : "মডেল টেস্ট ফলাফল"}
+                                      </h5>
+                                      <span className={`px-2 py-0.5 rounded text-[10px] font-black tracking-widest ${studentResult.gpaGrade === 'F' ? 'bg-red-100 text-red-700' : 'bg-emerald-200 text-emerald-800'}`}>
+                                        গ্রেড: {studentResult.gpaGrade}
+                                      </span>
+                                    </div>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-[10px] font-bold text-slate-600">
+                                      <div className="bg-white p-2 rounded shadow-sm border border-emerald-50 text-center"><div className="text-emerald-700/60 pb-1 text-[8px]">এমসিকিউ</div>{studentResult.mcqMarks}</div>
+                                      <div className="bg-white p-2 rounded shadow-sm border border-emerald-50 text-center"><div className="text-emerald-700/60 pb-1 text-[8px]">ব্যবহারিক</div>{studentResult.practicalMarks}</div>
+                                      <div className="bg-white p-2 rounded shadow-sm border border-emerald-50 text-center"><div className="text-emerald-700/60 pb-1 text-[8px]">ভাইভা</div>{studentResult.vivaMarks}</div>
+                                      <div className="bg-white p-2 rounded shadow-sm border border-emerald-50 text-center"><div className="text-emerald-700/60 pb-1 text-[8px]">মোট নম্বর</div>{studentResult.total}</div>
+                                    </div>
+                                    <div className="pt-2 text-right" id={`result-card-id-${student.roll}`}>
+                                      <button 
+                                        type="button"
+                                        disabled={generatingPdfRoll === student.roll}
+                                        onClick={() => handleDownloadStudentPDF(student, studentResult)}
+                                        className={`text-xs ${generatingPdfRoll === student.roll ? 'bg-slate-400' : 'bg-emerald-600 hover:bg-emerald-700'} text-white px-3 py-1.5 rounded-lg shadow-sm flex items-center gap-1 ml-auto`}
+                                      >
+                                        {generatingPdfRoll === student.roll ? (
+                                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                                        ) : (
+                                          <Download className="w-3.5 h-3.5" />
+                                        )}
+                                        {generatingPdfRoll === student.roll ? "ডাউনলোড হচ্ছে..." : "বিস্তারিত ও PDF ডাউনলোড"}
+                                      </button>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
+
                               {/* Portal Quick Operations Bar for students */}
-                              <div className="flex items-center justify-between gap-3 text-[10px] sm:text-xs">
+                              <div className="flex items-center justify-between gap-3 text-[10px] sm:text-xs mt-4">
                                 <span className="text-indigo-650 flex items-center gap-1 font-bold">
                                   <Award className="w-3.5 h-3.5 text-indigo-500 inline" />
                                   উচ্চ মানের বাস্তব শিক্ষা সল্যুশন
