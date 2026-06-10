@@ -39,6 +39,7 @@ export interface ModelTestResult {
   gpaPoint: number;       // e.g., 5.0, 4.0, 3.5 etc
   gpaGrade: string;       // e.g., A+, A, A-, B, F
   remarks: string;        // custom feedback
+  pdfUrl?: string;        // Optional uploaded PDF result link or board certificate path
 }
 
 export interface Course {
@@ -60,3 +61,35 @@ export interface VisitorMessage {
   message: string;
   date: string;
 }
+
+export interface ChatMessage {
+  id: string;
+  senderRoll: string;
+  senderName: string;
+  receiverRoll: string; // "group" for common chat, or other student roll for DM
+  text: string;
+  timestamp: number;
+}
+
+export interface PdfSheet {
+  id: string;
+  title: string;
+  course: string;
+  downloadUrl: string;
+  pdfUrl?: string;
+  uploader?: string;
+  date: string;
+  uploadDate?: string;
+  fileSize?: string;
+}
+
+export interface CoachingPhoto {
+  id: string;
+  title: string;
+  url: string;
+  pictureUrl?: string;
+  date: string;
+  uploadDate?: string;
+  description?: string;
+}
+
