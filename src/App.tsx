@@ -5,8 +5,8 @@ import {
   MapPin, Phone, MessageSquare, Menu, X, ArrowRight, UserCheck, Flame, Cpu, Headphones,
   Brain, Sparkles, RefreshCw
 } from "lucide-react";
-import { Student, ModelTestResult, VisitorMessage, Notice, NoticeComment } from "./types";
-import { INITIAL_STUDENTS, INITIAL_RESULTS } from "./data";
+import { Student, ModelTestResult, VisitorMessage, Notice, NoticeComment, PdfSheet, CoachingPhoto } from "./types";
+import { INITIAL_STUDENTS, INITIAL_RESULTS, GALLERY_IMAGES } from "./data";
 
 // Import custom subviews
 import StudentResultChecker from "./components/StudentResultChecker";
@@ -15,6 +15,8 @@ import CourseRegistration from "./components/CourseRegistration";
 import AboutContact from "./components/AboutContact";
 import HomeNoticeCard from "./components/HomeNoticeCard";
 import StudentShowcase from "./components/StudentShowcase";
+import NoticeBoardView from "./components/NoticeBoardView";
+import PdfSheetsView from "./components/PdfSheetsView";
 
 // Import Firebase config & Helpers
 import {
@@ -28,14 +30,34 @@ import {
 import { db, OperationType, handleFirestoreError } from "./firebase";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<"home" | "courses" | "results" | "about" | "admin">("home");
+  const [activeTab, setActiveTab] = useState<"home" | "courses" | "results" | "about" | "admin" | "notices" | "pdf-sheets">("home");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Admin authentication state synced with sessionStorage
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => {
+    try {
+      return sessionStorage.getItem("swapno_it_is_admin") === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  const handleAdminAuthChange = (auth: boolean) => {
+    setIsAdmin(auth);
+    try {
+      sessionStorage.setItem("swapno_it_is_admin", auth ? "true" : "false");
+    } catch (e) {
+      console.warn("sessionStorage failed:", e);
+    }
+  };
 
   // Core state managers
   const [students, setStudents] = useState<Student[]>([]);
   const [results, setResults] = useState<ModelTestResult[]>([]);
   const [visitorMessages, setVisitorMessages] = useState<VisitorMessage[]>([]);
   const [notices, setNotices] = useState<Notice[]>([]);
+  const [pdfSheets, setPdfSheets] = useState<PdfSheet[]>([]);
+  const [coachingPhotos, setCoachingPhotos] = useState<CoachingPhoto[]>([]);
   const [loading, setLoading] = useState(true);
   const [usingFallbackLocalStorage, setUsingFallbackLocalStorage] = useState(false);
   const [dbErrorMessage, setDbErrorMessage] = useState<string | null>(null);
@@ -104,6 +126,30 @@ export default function App() {
     }
   };
 
+  const fetchPdfSheets = async () => {
+    try {
+      const snap = await getDocs(collection(db, "pdfSheets"));
+      const list: PdfSheet[] = [];
+      snap.forEach((d) => list.push(d.data() as PdfSheet));
+      return list;
+    } catch (err) {
+      handleFirestoreError(err, OperationType.LIST, "pdfSheets");
+      return [];
+    }
+  };
+
+  const fetchCoachingPhotos = async () => {
+    try {
+      const snap = await getDocs(collection(db, "coachingPhotos"));
+      const list: CoachingPhoto[] = [];
+      snap.forEach((d) => list.push(d.data() as CoachingPhoto));
+      return list;
+    } catch (err) {
+      handleFirestoreError(err, OperationType.LIST, "coachingPhotos");
+      return [];
+    }
+  };
+
   // Seeding effect on component mount
   useEffect(() => {
     const loadAndSeedData = async () => {
@@ -113,6 +159,8 @@ export default function App() {
       let dbResults: ModelTestResult[] = [];
       let dbNotices: Notice[] = [];
       let dbMessages: VisitorMessage[] = [];
+      let dbPdfSheets: PdfSheet[] = [];
+      let dbCoachingPhotos: CoachingPhoto[] = [];
 
       try {
         // Try testing connection by reading students collection
@@ -247,6 +295,61 @@ export default function App() {
           }
         }
 
+        if (!offlineMode) {
+          try {
+            dbPdfSheets = await fetchPdfSheets();
+            if (dbPdfSheets.length === 0) {
+              const presetSheets: PdfSheet[] = [
+                {
+                  id: "sheet-1",
+                  title: "৩ মাস ও ৬ মাস মেয়াদী কম্পিউটার অফিস অ্যাপ্লিকেশন মডেল টেস্ট গাইড ২০২৬",
+                  course: "Computer Office Application",
+                  downloadUrl: "https://www.bteb.gov.bd/sites/default/files/files/bteb.portal.gov.bd/notices/e0d16be3_8cff_4370_9557_94086d79040c/2024-03-24-11-53-73ba50eb340c265a7d65b11ba90ca7b6.pdf",
+                  uploader: "মোহাম্মদ সাঈদ স্যার",
+                  date: "2026-06-10",
+                  fileSize: "2.4 MB"
+                },
+                {
+                  id: "sheet-2",
+                  title: "মাইক্রোসফট ওয়ার্ড ও এক্সেল সর্টকাট কীবোর্ড কমান্ড শিট ও প্রজেক্ট সাজেশন্স",
+                  course: "Computer Office Application",
+                  downloadUrl: "https://www.bteb.gov.bd/sites/default/files/files/bteb.portal.gov.bd/notices/e0d16be3_8cff_4370_9557_94086d79040c/2024-03-24-11-53-73ba50eb340c265a7d65b11ba90ca7b6.pdf",
+                  uploader: "মোহাম্মদ সাঈদ স্যার",
+                  date: "2026-06-09",
+                  fileSize: "1.1 MB"
+                }
+              ];
+              for (const s of presetSheets) {
+                await setDoc(doc(db, "pdfSheets", s.id), s);
+              }
+              dbPdfSheets = presetSheets;
+            }
+          } catch (e: any) {
+            console.warn("Firestore collection 'pdfSheets' failed.", e);
+          }
+        }
+
+        if (!offlineMode) {
+          try {
+            dbCoachingPhotos = await fetchCoachingPhotos();
+            if (dbCoachingPhotos.length === 0) {
+              const presetPhotos: CoachingPhoto[] = GALLERY_IMAGES.map((img) => ({
+                id: `db-photo-${img.id}`,
+                title: img.title,
+                description: img.description,
+                url: img.url,
+                date: "সংরক্ষিত"
+              }));
+              for (const p of presetPhotos) {
+                await setDoc(doc(db, "coachingPhotos", p.id), p);
+              }
+              dbCoachingPhotos = presetPhotos;
+            }
+          } catch (e: any) {
+            console.warn("Firestore collection 'coachingPhotos' failed.", e);
+          }
+        }
+
         if (offlineMode) {
           setUsingFallbackLocalStorage(true);
           try {
@@ -359,11 +462,59 @@ export default function App() {
             setVisitorMessages(presetMessagesLocal);
             localStorage.setItem("swapno_messages", JSON.stringify(presetMessagesLocal));
           }
+
+          // Parse or generate offline pdfSheets fallback
+          const localPdfSheets = localStorage.getItem("swapno_pdf_sheets");
+          if (localPdfSheets) {
+            setPdfSheets(JSON.parse(localPdfSheets));
+          } else {
+            const presetSheets: PdfSheet[] = [
+              {
+                id: "sheet-1",
+                title: "৩ মাস ও ৬ মাস মেয়াদী কম্পিউটার অফিস অ্যাপ্লিকেশন মডেল টেস্ট গাইড ২০২৬",
+                course: "Computer Office Application",
+                downloadUrl: "https://www.bteb.gov.bd/sites/default/files/files/bteb.portal.gov.bd/notices/e0d16be3_8cff_4370_9557_94086d79040c/2024-03-24-11-53-73ba50eb340c265a7d65b11ba90ca7b6.pdf",
+                uploader: "মোহাম্মদ সাঈদ স্যার",
+                date: "2026-06-10",
+                fileSize: "2.4 MB"
+              },
+              {
+                id: "sheet-2",
+                title: "মাইক্রোসফট ওয়ার্ড ও এক্সেল সর্টকাট কীবোর্ড কমান্ড শিট ও প্রজেক্ট সাজেশন্স",
+                course: "Computer Office Application",
+                downloadUrl: "https://www.bteb.gov.bd/sites/default/files/files/bteb.portal.gov.bd/notices/e0d16be3_8cff_4370_9557_94086d79040c/2024-03-24-11-53-73ba50eb340c265a7d65b11ba90ca7b6.pdf",
+                uploader: "মোহাম্মদ সাঈদ স্যার",
+                date: "2026-06-09",
+                fileSize: "1.1 MB"
+              }
+            ];
+            setPdfSheets(presetSheets);
+            localStorage.setItem("swapno_pdf_sheets", JSON.stringify(presetSheets));
+          }
+
+          // Parse or generate offline coachingPhotos fallback
+          const localCoachingPhotos = localStorage.getItem("swapno_coaching_photos");
+          if (localCoachingPhotos) {
+            setCoachingPhotos(JSON.parse(localCoachingPhotos));
+          } else {
+            const presetPhotos: CoachingPhoto[] = GALLERY_IMAGES.map((img) => ({
+              id: `db-photo-${img.id}`,
+              title: img.title,
+              description: img.description,
+              url: img.url,
+              date: "সংরক্ষিত"
+            }));
+            setCoachingPhotos(presetPhotos);
+            localStorage.setItem("swapno_coaching_photos", JSON.stringify(presetPhotos));
+          }
+
         } else {
           setStudents(dbStudents);
           setResults(dbResults);
           setNotices(dbNotices);
           setVisitorMessages(dbMessages);
+          setPdfSheets(dbPdfSheets);
+          setCoachingPhotos(dbCoachingPhotos);
         }
       } catch (err: any) {
         console.error("Critical error in loadAndSeedData: ", err);
@@ -747,191 +898,180 @@ export default function App() {
     }
   };
 
-  const navigateTo = (tab: "home" | "courses" | "results" | "about" | "admin") => {
+  const handleAddPdfSheet = async (newSheet: PdfSheet) => {
+    const addLocally = () => {
+      setPdfSheets((prev) => {
+        const next = [newSheet, ...prev];
+        localStorage.setItem("swapno_pdf_sheets", JSON.stringify(next));
+        return next;
+      });
+    };
+
+    if (usingFallbackLocalStorage) {
+      addLocally();
+      return;
+    }
+
+    try {
+      await setDoc(doc(db, "pdfSheets", newSheet.id), newSheet);
+      setPdfSheets((prev) => [newSheet, ...prev]);
+    } catch (err) {
+      activateLocalFallback(err, "Cloud database write pdf sheet failed. Storing locally.");
+      addLocally();
+    }
+  };
+
+  const handleDeletePdfSheet = async (id: string) => {
+    const deleteLocally = () => {
+      setPdfSheets((prev) => {
+        const next = prev.filter((s) => s.id !== id);
+        localStorage.setItem("swapno_pdf_sheets", JSON.stringify(next));
+        return next;
+      });
+    };
+
+    if (usingFallbackLocalStorage) {
+      deleteLocally();
+      return;
+    }
+
+    try {
+      await deleteDoc(doc(db, "pdfSheets", id));
+      setPdfSheets((prev) => prev.filter((s) => s.id !== id));
+    } catch (err) {
+      activateLocalFallback(err, "Cloud database delete pdf sheet failed. Removing locally.");
+      deleteLocally();
+    }
+  };
+
+  const handleAddCoachingPhoto = async (newPhoto: CoachingPhoto) => {
+    const addLocally = () => {
+      setCoachingPhotos((prev) => {
+        const next = [newPhoto, ...prev];
+        localStorage.setItem("swapno_coaching_photos", JSON.stringify(next));
+        return next;
+      });
+    };
+
+    if (usingFallbackLocalStorage) {
+      addLocally();
+      return;
+    }
+
+    try {
+      await setDoc(doc(db, "coachingPhotos", newPhoto.id), newPhoto);
+      setCoachingPhotos((prev) => [newPhoto, ...prev]);
+    } catch (err) {
+      activateLocalFallback(err, "Cloud database write photo failed. Storing locally.");
+      addLocally();
+    }
+  };
+
+  const handleDeleteCoachingPhoto = async (id: string) => {
+    const deleteLocally = () => {
+      setCoachingPhotos((prev) => {
+        const next = prev.filter((p) => p.id !== id);
+        localStorage.setItem("swapno_coaching_photos", JSON.stringify(next));
+        return next;
+      });
+    };
+
+    if (usingFallbackLocalStorage) {
+      deleteLocally();
+      return;
+    }
+
+    try {
+      await deleteDoc(doc(db, "coachingPhotos", id));
+      setCoachingPhotos((prev) => prev.filter((p) => p.id !== id));
+    } catch (err) {
+      activateLocalFallback(err, "Cloud database delete photo failed. Removing locally.");
+      deleteLocally();
+    }
+  };
+
+  const navigateTo = (tab: "home" | "courses" | "results" | "about" | "admin" | "notices" | "pdf-sheets") => {
     setActiveTab(tab);
     setMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between antialiased">
+    <div className="min-h-screen relative w-full overflow-x-hidden overflow-y-auto bg-slate-50 flex flex-col justify-between antialiased">
       
-      {/* 1. Header Marquee / Live Notification Banner */}
-      <div className="bg-gradient-to-r from-indigo-700 via-violet-800 to-indigo-900 text-white text-xs md:text-sm py-2 px-4 shadow-sm select-none overflow-hidden relative font-medium no-print">
-        <div className="max-w-7xl mx-auto flex items-center gap-2">
-          <span className="bg-rose-500 font-extrabold text-[10px] uppercase px-2 py-0.5 rounded-sm animate-pulse whitespace-nowrap shrink-0">
-            জরুরী নোটিশ 📢
-          </span>
-          {/* Authentic Scrolling Marquee */}
-          <div className="whitespace-nowrap overflow-hidden relative w-full">
-            <span className="inline-block pl-[100%] animate-[marquee_25s_linear_infinite] hover:[animation-play-state:paused] cursor-pointer">
-              স্বপ্ন কম্পিউটার ট্রেনিং সেন্টারে নতুন সেশনে (কম্পিউটার অফিস অ্যাপ্লিকেশন, গ্রাফিক ডিজাইন, ও প্রফেশনাল ওয়েব ডেভেলপমেন্ট) আকর্ষণীয় ছাড়ে ভর্তি চলছে! যোগাযোগ করুন: ০১৯৪১৬৫২০৯৭ / 01941652097 পরিচালক: মোহাম্মদ সাঈদ স্যার।
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <style>{`
-        @keyframes marquee {
-          0% { transform: translate(0, 0); }
-          100% { transform: translate(-100%, 0); }
-        }
-      `}</style>
-
       {/* 2. Primary Navigation Bar */}
-      <header className="bg-white border-b border-slate-100 shadow-xs sticky top-0 z-40 no-print">
+      <header className="bg-white border-b border-slate-150 shadow-sm sticky top-0 z-40 no-print py-3 sm:py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 md:h-20">
+          <div className="flex flex-col items-center gap-4">
             
-            {/* Branding Logo & Badge */}
-            <div className="flex items-center gap-2.5 md:gap-4 shrink-0">
+            {/* Row 1: Logo Heading & Badges */}
+            <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start w-full gap-4">
               <div 
                 onClick={() => navigateTo("home")} 
-                className="flex items-center gap-2.5 md:gap-3 cursor-pointer group select-none"
+                className="flex items-center gap-3 md:gap-4 cursor-pointer group select-none"
               >
-                <div className="w-9 h-9 md:w-12 md:h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-md shadow-indigo-200 group-hover:scale-105 transition-transform shrink-0">
-                  <School className="w-4 h-4 md:w-6 md:h-6" />
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-tr from-indigo-600 via-indigo-650 to-violet-600 rounded-full flex items-center justify-center text-white shadow-md shadow-indigo-150 group-hover:scale-105 group-hover:rotate-3 transition-all duration-300 shrink-0">
+                  <School className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </div>
-                <div className="text-left leading-tight shrink-0">
-                  <h1 className="text-sm md:text-xl font-black text-slate-800 tracking-tight flex items-center gap-1">
-                    স্বপ্ন কম্পিউটার <span className="text-indigo-600 font-normal">IT</span>
+                <div className="text-left leading-normal shrink-0">
+                  <h1 className="text-xl md:text-3xl font-black text-slate-950 tracking-tight flex items-center gap-2 font-sans relative group-hover:text-indigo-750 transition-colors">
+                    <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950">স্বপ্ন কম্পিউটার</span> 
+                    <span className="text-indigo-600 bg-indigo-50 border border-indigo-200/50 px-2.5 py-0.5 rounded-xl font-extrabold text-base md:text-2xl shadow-3xs relative inline-block animate-[pulse_3s_infinite]">
+                      আইটি
+                      <span className="absolute -bottom-0.5 left-0 w-full h-[2.5px] bg-indigo-600 rounded-full"></span>
+                    </span>
                   </h1>
-                  <p className="text-[9px] md:text-xs text-slate-400 font-bold tracking-widest font-mono">SWAPNO • AmanBazar</p>
+                  <p className="text-[10px] md:text-xs text-slate-500 font-extrabold tracking-widest font-mono mt-1 flex items-center gap-1.5 animate-pulse">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse shadow-xs"></span>
+                    SWAPNO COMPUTER IT • ACADEMIC STUDENT PORTAL
+                  </p>
                 </div>
               </div>
-
-              {/* Saiyed AI Top Logo Link - Always Clickable & Visible */}
-              <a 
-                href="https://saiyedai.netlify.app"
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Saiyed AI ওয়েবসাইটে প্রবেশ করুন"
-                className="flex items-center gap-1 bg-gradient-to-r from-teal-500 via-indigo-600 to-purple-600 hover:scale-105 text-white font-extrabold text-[10px] md:text-xs px-2.5 py-1 rounded-full shadow-md transition-all shrink-0 select-none border border-white/20 select-none animate-pulse hover:animate-none"
-              >
-                <Sparkles className="w-3 h-3 text-teal-200 animate-spin-slow" />
-                <span className="font-sans tracking-tight">Saiyed AI</span>
-              </a>
             </div>
 
-            {/* Desktop Nav Items */}
-            <nav className="hidden md:flex items-center gap-1">
-              {[
-                { id: "home", label: "Home" },
-                { id: "courses", label: "কোর্স ও এডমিশন" },
-                { id: "results", label: "ফলাফল চেক" },
-                { id: "about", label: "ল্যাব পরিচিতি" },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => navigateTo(tab.id as any)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                    activeTab === tab.id
-                      ? "bg-slate-950 text-white"
-                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-950"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </nav>
-
-            {/* Admin Quick Entrance & Desktop CTA */}
-            <div className="hidden md:flex items-center gap-3">
-              <button
-                onClick={() => navigateTo("admin")}
-                className={`py-2 px-3.5 rounded-xl border text-xs font-bold transition-all relative ${
-                  activeTab === "admin"
-                    ? "bg-rose-500 border-rose-500 text-white shadow-md shadow-rose-100"
-                    : "border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-rose-600"
-                }`}
-              >
-                অফিস প্যানেল (Only Sir)
-                {visitorMessages.length > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 bg-red-650 text-white rounded-full flex items-center justify-center text-[9px] font-black tracking-normal">
-                    {visitorMessages.length}
-                  </span>
-                )}
-              </button>
+            {/* Row 2: Sub-Navigation Menu (underneath logo heading) */}
+            <div className="w-full border-t border-slate-100 pt-3 md:pt-4">
+              <nav className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth w-full justify-start md:justify-center px-1 py-1">
+                {[
+                  { id: "home", label: "হোম" },
+                  { id: "courses", label: "কোর্স ও ভর্তি" },
+                  { id: "results", label: "ফলাফল ও চ্যাট" },
+                  { id: "notices", label: "নোটিশ বোর্ড" },
+                  { id: "pdf-sheets", label: "লেকচার শিট (PDF)" },
+                  { id: "about", label: "ল্যাব পরিচিতি" },
+                  { id: "admin", label: "এডমিন" },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => navigateTo(tab.id as any)}
+                    className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                      activeTab === tab.id
+                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-100 font-extrabold"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    }`}
+                  >
+                    {tab.label}
+                    {tab.id === "admin" && visitorMessages.length > 0 && (
+                      <span className="ml-1 px-1.5 py-0.5 bg-red-500 text-white text-[9px] font-black rounded-full leading-none">
+                        {visitorMessages.length}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </nav>
             </div>
-
-            {/* Mobile burger toggle */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-1 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
-              >
-                {mobileMenuOpen ? <X className="w-6 h-6 text-slate-800" /> : <Menu className="w-6 h-6 text-slate-800" />}
-              </button>
-            </div>
-
+            
           </div>
         </div>
-
-        {/* Mobile slide menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-white border-t border-slate-150 py-3 px-4 space-y-2 text-left"
-            >
-              {[
-                { id: "home", label: "হোম পেইজ" },
-                { id: "courses", label: "কোর্স ও ভর্তি বুকিং" },
-                { id: "results", label: "ফলাফল চেক করুন" },
-                { id: "about", label: "ল্যাব পরিচিতি ও ম্যাপ" },
-                { id: "admin", label: "অফিস এডমিন প্যানেল" },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => navigateTo(tab.id as any)}
-                  className={`w-full text-left py-2.5 px-4 rounded-xl text-xs font-bold transition-colors block ${
-                    activeTab === tab.id
-                      ? "bg-indigo-650 text-white"
-                      : "text-slate-600 hover:bg-slate-50"
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
       </header>
 
       {/* 3. Main Stage Content Container */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        {usingFallbackLocalStorage && (
-          <div className="mb-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 text-left shadow-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-amber-900 no-print">
-            <div className="flex gap-3">
-              <span className="text-xl shrink-0">⚠️</span>
-              <div>
-                <p className="text-xs font-black">অফলাইন স্টোরেজ ব্যাকআপ চালিত (Offline Storage Activated)</p>
-                <p className="text-[11px] text-amber-700 font-medium mt-0.5 leading-relaxed">
-                  ফায়ারবেস ক্লাউড ডাটাবেজ সংযোগে ধীরগতি বা ইন্টারাপ্ট থাকায় বর্তমানে আপনার ব্রাউজারের অফলাইন স্টোরেজ (LocalStorage) সচল করা হয়েছে। নোটিশ বোর্ড, নতুন শিক্ষার্থী ও ফলাফল সংযোজনসহ সম্পূর্ণ এডমিন প্যানেল সচল রয়েছে।
-                </p>
-                {dbErrorMessage && (
-                  <p className="text-[10px] text-amber-600 font-mono mt-1 break-all bg-amber-100/30 py-0.5 px-1.5 rounded">
-                    ত্রুটির বর্ণনা: {dbErrorMessage}
-                  </p>
-                )}
-              </div>
-            </div>
-            <button 
-              onClick={() => window.location.reload()}
-              className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-extrabold text-[10px] rounded-lg transition-all cursor-pointer shrink-0 inline-flex items-center gap-1.5 self-start sm:self-center shadow-xs"
-            >
-              <RefreshCw className="w-3 h-3 text-white" />
-              ডাটাবেজে রিকানেক্ট করুন
-            </button>
-          </div>
-        )}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 space-y-4">
-            <RefreshCw className="w-10 h-10 text-indigo-600 animate-spin" />
-            <p className="text-sm font-bold text-slate-600">সাঈদ এআই ডাটাবেজ এর সাথে সংযোগ করা হচ্ছে...</p>
-            <p className="text-xs text-slate-400">স্বপ্ন কারিগরি কম্পিউটার প্রশিক্ষণ কেন্দ্র ডাটাবেজ লোড করা হচ্ছে...</p>
+          <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
+            <RefreshCw className="w-8 h-8 text-indigo-600 animate-spin" />
+            <p className="text-sm font-bold text-slate-650">ক্লাউড ডাটাবেজ সংযোগ প্রতিস্থাপন করা হচ্ছে...</p>
+            <p className="text-xs text-slate-400 font-semibold">স্বপ্ন কম্পিউটার ইনস্টিটিউট লাইভ ডাটাবেজ লোড করা হচ্ছে...</p>
           </div>
         ) : (
           <AnimatePresence mode="wait">
@@ -943,14 +1083,20 @@ export default function App() {
               className="space-y-12"
             >
               
+              {/* Student Portrait Showcase at the absolute top of the Home page */}
+              <div className="bg-white p-5 md:p-6 rounded-3xl border border-slate-100 shadow-xs text-left">
+                <StudentShowcase students={students} isAdmin={isAdmin} />
+              </div>
+
               {/* Responsive Hero Segment */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-white p-6 md:p-12 rounded-3xl border border-slate-1 py-10 relative overflow-hidden shadow-xs">
+              <div className="bg-white p-6 md:p-12 rounded-3xl border border-slate-100 py-10 relative overflow-hidden shadow-xs text-left">
+                <div className="absolute inset-x-0 bottom-0 top-1/2 bg-gradient-to-t from-slate-50/50 to-transparent pointer-events-none"></div>
                 
                 {/* Text Block */}
-                <div className="lg:col-span-7 space-y-6 text-left z-10">
+                <div className="space-y-6 max-w-4xl z-10 relative">
                   <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-750 px-3.5 py-1.5 rounded-full text-xs font-bold">
-                    <Flame className="w-3.5 h-3.5 text-rose-500" />
-                    আমান বাজার বিশ্বস্ত কম্পিউটার প্রশিক্ষণ কেন্দ্র 
+                    <Flame className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
+                    <span>Hathazari's Ultimate Tech Learning Wing • হাটহাজারীর বিশ্বস্ত কম্পিউটার উইং</span>
                   </div>
                   <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
                     কম্পিউটার শিখুন, <br />
@@ -958,58 +1104,40 @@ export default function App() {
                       স্বাবলম্বী ক্যারিয়ার
                     </span> গড়ুন।
                   </h2>
-                  <p className="text-slate-600 text-sm md:text-base leading-relaxed max-w-lg">
-                    স্বপ্ন কারিগরি ও কম্পিউটার সেন্টারে সম্পূর্ণ কোলাহলমুক্ত নিরিবিলি পরিবেশে আপনি পাচ্ছেন প্রফেশনাল কোর্স সুবিধা। 
+                  <p className="text-slate-650 text-sm md:text-base leading-relaxed max-w-3xl font-medium">
+                    স্বপ্ন কারিগরি ও কম্পিউটার সেন্টারে সম্পূর্ণ কোলাহলমুক্ত নিরিবিলি পরিবেশে আপনি পাচ্ছেন প্রফেশনাল কোর্স সুবিধা। আমাদের ল্যাবে লার্জ মাল্টিমিডিয়া স্ক্রিন এবং ডেডিকেটেড হাই-কনফিগারেশন কম্পিউটার রয়েছে। সাঈদ স্যারের সরাসরি তত্ত্বাবধানে আপনি পাবেন প্র্যাক্টিক্যাল ক্যারিয়ার সリューション।
                   </p>
                   
                   {/* CTA Buttons */}
                   <div className="flex flex-wrap gap-3">
                     <button
                       onClick={() => navigateTo("courses")}
-                      className="bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-100 text-white rounded-xl py-3 px-6 font-bold text-sm transition-all flex items-center gap-2 cursor-pointer"
+                      className="bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-100 text-white rounded-xl py-3 px-6 font-bold text-xs md:text-sm transition-all flex items-center gap-2 cursor-pointer"
                     >
-                      ভর্তি বুকিং ফর্ম
+                      <span>ভর্তি বুকিং ফর্ম</span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => navigateTo("results")}
-                      className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl py-3 px-6 font-bold text-sm transition-all cursor-pointer"
+                      className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl py-3 px-6 font-bold text-xs md:text-sm transition-all cursor-pointer"
                     >
-                      পরীক্ষার মার্কশীট দেখুন
+                      <span>পরীক্ষার মার্কশীট ও চ্যাট দেখুন</span>
                     </button>
                   </div>
 
                   {/* Highlights row */}
-                  <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-100 text-left font-mono">
+                  <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-100 text-left font-mono max-w-sm">
                     <div>
                       <strong className="text-xl md:text-2xl font-black text-slate-800">৫০০+</strong>
-                      <p className="text-[10px] text-slate-400 font-sans font-bold uppercase mt-0.5">সফল কোর্স সম্পন্নকারী</p>
+                      <p className="text-[10px] text-slate-400 font-sans font-bold uppercase mt-0.5">সফল গ্র্যাজুয়েট</p>
                     </div>
                     <div>
                       <strong className="text-xl md:text-2xl font-black text-slate-800">৪ টি</strong>
-                      <p className="text-[10px] text-slate-400 font-sans font-bold uppercase mt-0.5">অফিস কোর্স</p>
+                      <p className="text-[10px] text-slate-400 font-sans font-bold uppercase mt-0.5">আইটি কোর্স</p>
                     </div>
                     <div>
                       <strong className="text-xl md:text-2xl font-black text-slate-800">১:১</strong>
                       <p className="text-[10px] text-slate-400 font-sans font-bold uppercase mt-0.5">ব্যক্তিগত কেয়ার</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Graphical Feature Frame Column */}
-                <div className="lg:col-span-5 relative">
-                  <div className="w-full h-80 rounded-2xl bg-indigo-50 border border-indigo-100 overflow-hidden relative shadow-inner flex items-center justify-center">
-                    <div className="absolute inset-0 bg-[radial-gradient(#818cf8_1px,transparent_1px)] [background-size:20px_20px] opacity-10"></div>
-                    <div className="z-10 p-6 text-center space-y-4">
-                      <div className="w-16 h-16 bg-white shrink-0 rounded-2xl shadow-md border border-slate-100 flex items-center justify-center mx-auto text-indigo-650">
-                        <Cpu className="w-8 h-8" />
-                      </div>
-                      <div className="space-y-1">
-                        <strong className="font-extrabold text-slate-800 text-sm md:text-base block">স্বপ্ন কম্পিউটার ট্রেনিং সেন্টার পোর্টাল</strong>
-                        <p className="text-xs text-slate-550 max-w-xs mx-auto">
-                          সকল শিক্ষার্থীর প্র্যাক্টিক্যাল অনুশীলন ডাটাবেজ ট্র্যাক করতে এবং ডিজিটাল সার্টিফিকেট নিশ্চিত করতে সাঈদ এআই গুরুত্বপূর্ণ ভূমিকা পালন করে।
-                        </p>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -1018,7 +1146,7 @@ export default function App() {
               {/* Core Features Grid */}
               <div className="space-y-4">
                 <div className="text-left border-b border-slate-100 pb-2">
-                  <h3 className="font-extrabold text-slate-800 text-base md:text-lg">আমাদের প্রধান কোর্স সমূহ</h3>
+                  <h3 className="font-extrabold text-slate-800 text-base md:text-lg">আমাদের প্রধান কোর্স কারিকুলাম সমূহ</h3>
                   <p className="text-xs text-slate-500">স্বাবলম্বী স্বাধীন ক্যারিয়ার শুরু করার জন্য সেরা প্রোগ্রাম সমূহ বেছে নিন।</p>
                 </div>
 
@@ -1058,7 +1186,7 @@ export default function App() {
                     <div>
                       <h3 className="font-extrabold text-slate-800 text-base md:text-lg flex items-center gap-1.5 leading-snug">
                         <Sparkles className="w-4.5 h-4.5 text-indigo-600 shrink-0" />
-                        ইনস্টিটিউট নোটিশ বোর্ড (Notice Board)
+                        ইনস্টিটিউট লাইভ নোটিশ বোর্ড (Notice Board)
                       </h3>
                       <p className="text-[11px] text-slate-400 mt-0.5 leading-none">
                         সাঈদ স্যার কর্তৃক প্রকাশিত নিয়মিত তথ্যাবলী ও শিক্ষার্থীবৃন্দের মন্তব্য সেশন।
@@ -1086,7 +1214,7 @@ export default function App() {
 
                 {/* Registered Student Portrait Showcase (Right part, 5 out of 12 columns) */}
                 <div className="lg:col-span-5 bg-white p-5 md:p-6 rounded-3xl border border-slate-100 shadow-xs">
-                  <StudentShowcase students={students} />
+                  <StudentShowcase students={students} isAdmin={isAdmin} />
                 </div>
               </div>
 
@@ -1098,12 +1226,12 @@ export default function App() {
                 <div className="space-y-2">
                   <h4 className="font-extrabold text-slate-800 text-sm md:text-base flex items-center gap-1.5 leading-snug">
                     <UserCheck className="w-4 h-4 text-indigo-600" />
-                    পরিচালকের পক্ষ থেকে মোহাম্মদ সাঈদ স্যার ও আসাদ স্যারের শুভেচ্ছা বার্তা
+                    পরিচালকের ডেক্স থেকে মোহাম্মদ সাঈদ স্যারের শুভেচ্ছা বার্তা
                   </h4>
                   <p className="text-slate-650 italic text-xs md:text-sm leading-relaxed">
                     "প্রিয় তরুণ বন্ধুরা, কম্পিউটার শিক্ষা কোনো বিলাসীতা নয় বরং এটি আধুনিক স্বাবলম্বী হওয়ার মূল হাতিয়ার। স্বপ্ন কম্পিউটারে আমরা কোনো জটিলতা ছাড়া অত্যন্ত সহজ ভাষায় চট্টগ্রামের আঞ্চলিক আবেগের সাথে মিশে বাস্তব প্র্যাক্টিক্যাল শিক্ষা প্রদান করি। আপনাদের দক্ষ গড়ে তোলাই আমার একমাত্র স্বপ্ন।"
                   </p>
-                  <p className="text-[10px] text-slate-400 font-bold block">মোহাম্মদ সাঈদ • পরিচালক, স্বপ্ন টেকনিক্যাল  কম্পিউটার</p>
+                  <p className="text-[10px] text-slate-400 font-bold block">মোহাম্মদ সাঈদ • পরিচালক, স্বপ্ন টেকনিক্যাল রূপকার কম্পিউটার</p>
                 </div>
               </div>
 
@@ -1130,13 +1258,37 @@ export default function App() {
             </motion.div>
           )}
 
+          {activeTab === "notices" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <NoticeBoardView
+                notices={notices}
+                onLike={handleLikeNotice}
+                onAddComment={handleAddComment}
+              />
+            </motion.div>
+          )}
+
+          {activeTab === "pdf-sheets" && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <PdfSheetsView pdfSheets={pdfSheets} />
+            </motion.div>
+          )}
+
           {activeTab === "about" && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <AboutContact />
+              <AboutContact coachingPhotos={coachingPhotos} />
             </motion.div>
           )}
 
@@ -1159,6 +1311,14 @@ export default function App() {
                 onDeleteNotice={handleDeleteNotice}
                 onUpdateNotice={handleUpdateNotice}
                 onDeleteComment={handleDeleteComment}
+                pdfSheets={pdfSheets}
+                onAddPdfSheet={handleAddPdfSheet}
+                onDeletePdfSheet={handleDeletePdfSheet}
+                coachingPhotos={coachingPhotos}
+                onAddCoachingPhoto={handleAddCoachingPhoto}
+                onDeleteCoachingPhoto={handleDeleteCoachingPhoto}
+                isAdmin={isAdmin}
+                onAuthChange={handleAdminAuthChange}
               />
             </motion.div>
           )}
@@ -1166,15 +1326,52 @@ export default function App() {
         )}
       </main>
 
-      {/* Floating Speed Contact Bubble on Right Column */}
-      <div className="fixed bottom-6 right-6 z-40 no-print flex flex-col gap-2">
-        <a
-          href="tel:01941652097"
-          title="কল করুন সাঈদ স্যার"
-          className="p-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg transition-transform hover:-translate-y-0.5 flex items-center justify-center cursor-pointer"
+      {/* Floating Action/AI Chat Head Widget Stack */}
+      <div className="fixed bottom-6 right-6 z-50 no-print flex flex-col gap-3 items-end">
+        
+        {/* Dynamic Saiyed AI Chat Head with Tooltip */}
+        <motion.div 
+          className="flex items-center gap-2 group cursor-grab active:cursor-grabbing touch-none select-none"
+          drag
+          dragElastic={0.15}
+          dragMomentum={false}
+          initial={{ scale: 0, opacity: 0, y: 30 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, type: "spring", stiffness: 200, damping: 20 }}
         >
-          <Phone className="w-5 h-5" />
-        </a>
+          {/* Tooltip bubble that pops up on hover */}
+          <div className="hidden sm:block bg-slate-950 text-white font-sans text-[11px] font-black py-2 px-3.5 rounded-2xl shadow-xl border border-indigo-500/20 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap tracking-wide mr-2 translate-x-3 group-hover:translate-x-0">
+            <span className="text-amber-400 font-extrabold flex items-center gap-1">
+              <Sparkles className="w-3 h-3 text-amber-400 inline" />
+              সাঈদ এআই (Saiyed AI)
+            </span>
+            <span className="text-indigo-200 mt-0.5 block">চ্যাট ও প্রশ্নের উত্তর পেতে ক্লিক করুন 💬</span>
+          </div>
+
+          <a
+            href="https://saiyedai.netlify.app"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Saiyed AI ওয়েবসাইট ও এআই চ্যাট করুন"
+            className="w-[48px] h-[48px] bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-900 rounded-full flex flex-col items-center justify-center text-white shadow-xl shadow-indigo-500/25 border border-indigo-400/60 hover:border-amber-400 hover:scale-105 active:scale-95 transition-all duration-300 shrink-0 ring-2 ring-indigo-500/20 group relative overflow-visible"
+          >
+            {/* Pulsing ambient glowing ring */}
+            <span className="absolute inset-x-0 inset-y-0 rounded-full bg-indigo-500/20 animate-ping opacity-50 pointer-events-none"></span>
+            <span className="absolute inset-0 rounded-full bg-gradient-to-tr from-indigo-500/5 to-amber-500/5 animate-pulse pointer-events-none"></span>
+
+            <div className="relative flex flex-col items-center justify-center text-center">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse drop-shadow-[0_0_4px_rgba(251,191,36,0.8)]" />
+              <span className="text-[5.5px] font-extrabold text-amber-300 tracking-wider mt-0.5 font-mono uppercase leading-none">
+                SAIYED
+              </span>
+              <span className="text-[6.5px] font-black text-indigo-105 mt-[0.5px] leading-none">
+                এআই
+              </span>
+              {/* Active green indicator badge */}
+              <span className="absolute -top-1 -right-1.5 w-2 h-2 bg-emerald-500 border border-slate-950 rounded-full animate-pulse shadow-[0_0_6px_rgba(16,185,129,0.8)]"></span>
+            </div>
+          </a>
+        </motion.div>
       </div>
 
       {/* 4. Footer Column */}
@@ -1187,7 +1384,7 @@ export default function App() {
               <strong className="text-sm font-bold">স্বপ্ন কম্পিউটার ট্রেনিং</strong>
             </div>
             <p className="text-slate-400 text-xs leading-relaxed">
-              স্বাবলম্বী ক্যারিয়ার গড়ার লক্ষ্যে চট্টগ্রামের হাটহাজারী উপজেলার আমান বাজারে প্রতিষ্ঠিত স্বপ্ন কম্পিউটার প্রশিক্ষণ কেন্দ্র সর্বদা মানসম্মত এবং যুগোপযোগী কম্পিউটার প্রশিক্ষণ দিয়ে আসছে।
+              স্বাবলম্বী ক্যারিয়ার গড়ার লক্ষ্যে চট্টগ্রামের হাটহাজারী উপজেলার আমান বাজারে প্রতিষ্ঠিত স্বপ্ন কম্পিউটার আইটি সর্বদা মানসম্মত এবং যুগোপযোগী কম্পিউটার প্রশিক্ষণ দিয়ে আসছে।
             </p>
           </div>
 
@@ -1206,25 +1403,26 @@ export default function App() {
             <div className="flex flex-col gap-1 text-xs">
               <button onClick={() => navigateTo("results")} className="text-left text-slate-405 hover:text-indigo-400">পরীক্ষার ফলাফল অনুসন্ধান</button>
               <button onClick={() => navigateTo("courses")} className="text-left text-slate-405 hover:text-indigo-400">নতুন ভর্তি রিকোয়েস্ট</button>
-              <button onClick={() => navigateTo("about")} className="text-left text-slate-405 hover:text-indigo-400"> অবস্থান</button>
+              <button onClick={() => navigateTo("about")} className="text-left text-slate-405 hover:text-indigo-400">ল্যাব রুট ম্যাপ অবস্থান</button>
               <button onClick={() => navigateTo("admin")} className="text-left text-slate-405 hover:text-indigo-400 font-bold text-rose-450">অফিস এডমিন প্যানেল</button>
             </div>
           </div>
 
           <div className="space-y-3 text-left">
-            <strong className="text-white text-xs block font-bold mb-2">যোগাযোগ (Hotline)</strong>
-            <p className="text-xs">পরিচালক সরাসরি:</p>
-            <strong className="text-sm font-mono text-emerald-450 block font-bold">০১৯৪১৬৫২০৯৭ | 01941652097</strong>
-            <p className="text-[10px] text-slate-500">আমান বাজার কলেজ রোড রোড, ইব্রাহিম মার্কেট ২য় তলা, হাটহাজারী, চট্টগ্রাম।</p>
+            <strong className="text-white text-xs block font-bold mb-2">প্রতিষ্ঠানের ঠিকানা</strong>
+            <p className="text-xs leading-relaxed text-slate-400">
+              আমান বাজার তরাইল মোড় সংলগ্ন রোড,<br />
+              হাটহাজারী, চট্টগ্রাম।
+            </p>
           </div>
 
         </div>
 
         {/* Base line licensing */}
         <div className="max-w-7xl mx-auto px-4 border-t border-slate-800 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center text-left text-[11px] text-slate-500 gap-4">
-          <p>© {new Date().getFullYear()} স্বপ্ন কারিগরি কম্পিউটার ট্রেনিং সেন্টার। সাঈদ কর্তৃক সংরক্ষিত।</p>
+          <p>© {new Date().getFullYear()} স্বপ্ন কারিগরি কম্পিউটার ও আইটি ট্রেনিং ইনস্টিটিউট। সর্বস্বত্ব সংরক্ষিত।</p>
           <div className="flex items-center gap-1 font-mono">
-            <span>স্থাপিত ২০২৫</span>
+            <span>স্থাপিত ২০১৯</span>
             <span>•</span>
             <span className="text-indigo-450 animate-pulse">স্মার্ট বাংলাদেশ অর্জনে সংকল্পবদ্ধ</span>
           </div>
