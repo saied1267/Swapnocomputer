@@ -35,7 +35,7 @@ export default function AboutContact({ coachingPhotos = [] }: AboutContactProps)
             স্বপ্ন টেকনিক্যাল কম্পিউটার ট্রেনিং সেন্টার
           </h3>
           <p className="text-slate-200 text-xs md:text-sm leading-relaxed font-normal">
-            স্বপ্ন টেকনিক্যাল কম্পিউটার ও আইটি ট্রেনিং ইনস্টিটিউট ২০১৯ সালে চট্টগ্রামের হাটহাজারী উপজেলার আমান বাজারে প্রতিষ্ঠিত হওয়ার পর থেকে শত শত শিক্ষার্থীকে আইটি বিষয়ে দক্ষ ও স্বাবলম্বী করে তুলেছে। স্থানীয় তরুণ সমাজকে আধুনিক বিশ্বের চ্যালেঞ্জ মোকাবেলায় কম্পিউটার শিক্ষার প্রসারে পরিচালক মোহাম্মদ সাঈদ স্যারের সরাসরি তত্ত্বাবধানে প্রতিষ্ঠানটি নিরলস কাজ করে যাচ্ছে।
+            স্বপ্ন টেকনিক্যাল কম্পিউটার ট্রেনিং সেন্টার ২০২৫ সালে চট্টগ্রামের হাটহাজারী উপজেলার আমান বাজারে প্রতিষ্ঠিত হওয়ার পর থেকে শত শত শিক্ষার্থীকে কম্পিউটার বিষয়ে দক্ষ ও স্বাবলম্বী করে তুলেছে। স্থানীয় তরুণ সমাজকে আধুনিক বিশ্বের চ্যালেঞ্জ মোকাবেলায় কম্পিউটার শিক্ষার প্রসারে পরিচালক মোহাম্মদ সাঈদ স্যারের সরাসরি তত্ত্বাবধানে প্রতিষ্ঠানটি নিরলস কাজ করে যাচ্ছে।
           </p>
         </div>
       </div>
@@ -48,7 +48,7 @@ export default function AboutContact({ coachingPhotos = [] }: AboutContactProps)
           </div>
           <h4 className="font-extrabold text-slate-800 text-xs md:text-sm">১:১ কম্পিউটার ও লাইভ প্র্যাকটিস</h4>
           <p className="text-slate-500 text-[11px] leading-relaxed">
-            প্রতিটি শিক্ষার্থীর জন্য রয়েছে পৃথক লেটেস্ট কম্পিউটার এবং বড় স্ক্রিন প্রজেক্টর ল্যাবের মাধ্যমে হাতে কলমে অনুশীলন সুবিধা।
+            প্রতিটি শিক্ষার্থীর জন্য রয়েছে পৃথক কম্পিউটার এবং হাতে কলমে অনুশীলন সুবিধা।
           </p>
         </div>
 
@@ -58,7 +58,7 @@ export default function AboutContact({ coachingPhotos = [] }: AboutContactProps)
           </div>
           <h4 className="font-extrabold text-slate-800 text-xs md:text-sm">সরকারি অনুমোদিত সেরা সিলেবাস</h4>
           <p className="text-slate-500 text-[11px] leading-relaxed">
-            বাংলাদেশ কারিগরি শিক্ষা বোর্ড (BTEB) অনুমোদিত ৩ মাস ও ৬ মাস মেয়াদী জাতীয় স্ট্যান্ডার্ড কম্পিউটার প্রশিক্ষণ সিলেবাস।
+            বাংলাদেশ ডাক বিভাগ অনুমোদিত ৩ মাস ও ৬ মাস মেয়াদী জাতীয় স্ট্যান্ডার্ড কম্পিউটার প্রশিক্ষণ সিলেবাস।
           </p>
         </div>
 
@@ -68,7 +68,7 @@ export default function AboutContact({ coachingPhotos = [] }: AboutContactProps)
           </div>
           <h4 className="font-extrabold text-slate-800 text-xs md:text-sm">সাঈদ স্যারের আজীবন ল্যাব এক্সেস</h4>
           <p className="text-slate-500 text-[11px] leading-relaxed">
-            কোর্স সমাপ্তির পরও যেকোনো জটিলতায় আমাদের ল্যাবে যেকোনো সময় বিনা মূল্যে এসে প্র্যাকটিস ও গাইড সাপোর্ট পাওয়ার নিশ্চয়তা।
+            কোর্স সমাপ্তির পরও যেকোনো জটিলতায় আমাদের সেন্টারে যেকোনো সময় বিনা মূল্যে এসে প্র্যাকটিস ও গাইড সাপোর্ট পাওয়ার নিশ্চয়তা।
           </p>
         </div>
       </div>
@@ -81,7 +81,7 @@ export default function AboutContact({ coachingPhotos = [] }: AboutContactProps)
               <ImageIcon className="w-5 h-5 text-indigo-600" />
               আমাদের কম্পিউটার ল্যাব ও গ্যালারি
             </h4>
-            <p className="text-xs text-slate-500">স্বপ্ন টেকনিক্যাল কম্পিউটার ট্রেনিং একাডেমির নিয়মিত ক্লাস এবং সাফল্যের সুন্দর মুহূর্তগুলো।</p>
+            <p className="text-xs text-slate-500">স্বপ্ন টেকনিক্যাল কম্পিউটার ট্রেনিং সেন্টারের নিয়মিত ক্লাস এবং সাফল্যের সুন্দর মুহূর্তগুলো।</p>
           </div>
           <span className="text-[10px] font-black text-indigo-700 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-xl">
             মোট ছবি: {displayPhotos.length} টি
@@ -127,8 +127,8 @@ export default function AboutContact({ coachingPhotos = [] }: AboutContactProps)
                   <MapPin className="w-4 h-4" />
                 </div>
                 <div>
-                  <strong className="text-slate-800 text-xs block mb-0.5">আমাদের ল্যাব অবস্থান:</strong>
-                  <span>মোহাম্মদ সাইদের বিল্ডিং, তরাইল মোড় সংলগ্ন, আমান বাজার, হাটহাজারী, চট্টগ্রাম।</span>
+                  <strong className="text-slate-800 text-xs block mb-0.5">আমাদের সেন্টারের অবস্থান:</strong>
+                  <span>কলেজ রোড, ইব্রাহিম মার্কেট ২য় তলা, আমান বাজার, হাটহাজারী, চট্টগ্রাম।</span>
                 </div>
               </div>
 
@@ -139,7 +139,7 @@ export default function AboutContact({ coachingPhotos = [] }: AboutContactProps)
                 <div>
                   <strong className="text-slate-800 text-xs block mb-0.5">মোবাইল ফোন ও হটলাইন:</strong>
                   <span className="font-mono block text-slate-700 font-bold">০১৯৪১৬৫২০৯৭</span>
-                  <span className="font-mono block text-slate-500">০১৮৩০০৩৪৮৮ (মোহাম্মদ সাঈদ স্যার)</span>
+                  <span className="font-mono block text-slate-500">01941652097 (মোহাম্মদ সাঈদ স্যার)</span>
                 </div>
               </div>
 
@@ -149,7 +149,7 @@ export default function AboutContact({ coachingPhotos = [] }: AboutContactProps)
                 </div>
                 <div>
                   <strong className="text-slate-800 text-xs block mb-0.5">ইমেইল ঠিকানা (Email):</strong>
-                  <span className="font-mono">swapnocomputer@gmail.com</span>
+                  <span className="font-mono"></span>
                 </div>
               </div>
 
@@ -159,7 +159,7 @@ export default function AboutContact({ coachingPhotos = [] }: AboutContactProps)
                 </div>
                 <div>
                   <strong className="text-slate-800 text-xs block mb-0.5">সাপ্তাহিক কর্মঘণ্টা:</strong>
-                  <span>শনিবার থেকে বৃহস্পতিবার (সকাল ৯:০০ টা - রাত ৮:০০ টা)। শুক্রবার সাপ্তাহিক বন্ধ।</span>
+                  <span>শনিবার থেকে বৃহস্পতিবার (সকাল ১০:০০ টা - সন্ধা ৭:০০ টা)। শুক্রবার সাপ্তাহিক বন্ধ।</span>
                 </div>
               </div>
             </div>
@@ -171,7 +171,7 @@ export default function AboutContact({ coachingPhotos = [] }: AboutContactProps)
           <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm h-full flex flex-col justify-between space-y-4">
             <div className="space-y-1">
               <h4 className="font-extrabold text-slate-800 text-base">হাটহাজারী রোড থেকে আসার রুট ম্যাপ</h4>
-              <p className="text-xs text-slate-500">চট্টগ্রাম শহরের অক্সিজেন মোড় হয়ে হাটহাজারী রোডে আমান বাজার বাসস্ট্যান্ড নামলেই সহজে পাওয়া যাবে।</p>
+              <p className="text-xs text-slate-500">চট্টগ্রাম শহরের অক্সিজেন মোড় হয়ে হাটহাজারী রোডে আমান বাজার মোড় নামলেই সহজে পাওয়া যাবে।</p>
             </div>
             
             {/* Visual static map representation */}
@@ -185,14 +185,14 @@ export default function AboutContact({ coachingPhotos = [] }: AboutContactProps)
                   স্বপ্ন কম্পিউটার ট্রেনিং সেন্টার পোর্ট
                 </div>
                 <div className="text-[11px] text-slate-500 space-y-1 select-none font-medium">
-                  <p>⛽ অক্সিজেন মোড় (২ কিমি দুরে) •• [চট্টগ্রাম-হাটহাজারী রোড] •• 🕌 আমান বাজার স্ট্যান্ড</p>
-                  <p className="font-bold text-slate-800">📍 মোহাম্মদ সাইদ বিল্ডিং ২য় তলা, তরাইল মোড় সংলগ্ন</p>
+                  <p>⛽ অক্সিজেন মোড় (২ কিমি দুরে) •• [চট্টগ্রাম-হাটহাজারী রোড] •• 🕌 আমান বাজার মোড়</p>
+                  <p className="font-bold text-slate-800">📍 কলেজ রোড, ইব্রাহিম মার্কেট ২য় তলা</p>
                 </div>
               </div>
             </div>
 
             <div className="bg-indigo-50/55 p-3 rounded-xl text-[11px] text-indigo-900 border border-indigo-100 font-medium">
-              💡 <strong>সহজে খুঁজে পেতে:</strong> আমাদের ল্যাবে আসার আগে পরিচালক সাঈদ স্যারকে কল দিন। আপনি আমান বাজার স্ট্যান্ড থামলে আমরা আপনাকে রিসিভ করার ব্যবস্থা করতে পারব।
+              💡 <strong>সহজে খুঁজে পেতে:</strong> আমাদের প্রতিষ্টানে আসার আগে পরিচালক সাঈদ স্যারকে কল দিন।
             </div>
           </div>
         </div>
