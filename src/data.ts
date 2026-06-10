@@ -1397,29 +1397,4 @@ export const INITIAL_RESULTS: ModelTestResult[] = [
   }
 ];
 
-export const GALLERY_IMAGES = [
-  {
-    id: 1,
-    title: "আইটি ল্যাব ক্লাস সেশন",
-    description: "স্বেচ্ছাসেবী কম্পিউটার ক্লাসে শিক্ষার্থীদের হাতেকলমে প্রশিক্ষণ প্রদান করা হচ্ছে।",
-    url: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?auto=format&fit=crop&q=80&w=600"
-  },
-  {
-    id: 2,
-    title: "সাফল্যের আনন্দ",
-    description: "মডেল টেস্ট ও চূড়ান্ত পরীক্ষায় উত্তীর্ণ সেরা শিক্ষার্থীদের সার্টিফিকেট বিতরণ উৎসব।",
-    url: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=600"
-  },
-  {
-    id: 3,
-    title: "গ্রুপ ওয়ার্ক ও অনুশীলন",
-    description: "দলগত কাজের মাধ্যমে ডেটাবেজ প্রোজেক্ট নিয়ে আলোচনা করছেন শিক্ষার্থীরা।",
-    url: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=600"
-  },
-  {
-    id: 4,
-    title: "উন্নত ল্যাব ফ্যাসিলিটি",
-    description: "হ্যালুসিনেশনহীন ডেডিকেটেড কম্পিউটার আইটি রুম ও দ্রুতগতির ব্রডব্যান্ড ইন্টারনেট সুবিধা।",
-    url: "https://images.unsplash.com/photo-1547082299-de196ea013d6?auto=format&fit=crop&q=80&w=600"
-  }
-];
+export const GALLERY_IMAGES: any[] = [];
