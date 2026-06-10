@@ -152,7 +152,7 @@ export default function StudentShowcase({ students, results = [], isAdmin = fals
             <div className="p-1.5 bg-emerald-50 rounded-xl">
               <UserCheck className="w-5 h-5 text-emerald-600 animate-[pulse_2s_infinite]" />
             </div>
-            আমাদের চটজলদি শিক্ষার্থী গ্যালারি
+            আমাদের শিক্ষার্থী গ্যালারি
           </h3>
           <p className="text-xs text-slate-400 mt-1 leading-snug">
             স্বপ্ন আইটি থেকে দক্ষ হয়ে ওঠা প্রিয় ছাত্র-ছাত্রীদের তালিকা ও ছবিসমূহ।
