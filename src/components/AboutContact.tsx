@@ -19,7 +19,7 @@ export default function AboutContact() {
             স্বপ্ন টেকনিক্যাল কম্পিউটার ট্রেনিং সেন্টার
           </h3>
           <p className="text-slate-300 text-sm md:text-base leading-relaxed font-normal">
-            স্বপ্ন টেকনিক্যাল কম্পিউটার ও আইটি ট্রেনিং ইনস্টিটিউট ২০১৯ সালে চট্টগ্রামের হাটহাজারী উপজেলার আমান বাজারে প্রতিষ্ঠিত হওয়ার পর থেকে শত শত শিক্ষার্থীকে আইটি বিষয়ে দক্ষ ও স্বাবলম্বী করে তুলেছে। স্থানীয় তরুণ সমাজকে আধুনিক বিশ্বের চ্যালেঞ্জ মোকাবেলায় কম্পিউটার শিক্ষার প্রসারে পরিচালক মোহাম্মদ সাঈদ স্যারের সরাসরি তত্ত্বাবধানে প্রতিষ্ঠানটি নিরলস কাজ করে যাচ্ছে।
+            স্বপ্ন টেকনিক্যাল কম্পিউটার ও আইটি ট্রেনিং ইনস্টিটিউট ২০২৫ সালে চট্টগ্রামের হাটহাজারী উপজেলার আমান বাজারে প্রতিষ্ঠিত হওয়ার পর থেকে শত শত শিক্ষার্থীকে আইটি বিষয়ে দক্ষ ও স্বাবলম্বী করে তুলেছে। স্থানীয় তরুণ সমাজকে আধুনিক বিশ্বের চ্যালেঞ্জ মোকাবেলায় কম্পিউটার শিক্ষার প্রসারে পরিচালক মোহাম্মদ সাঈদ স্যারের সরাসরি তত্ত্বাবধানে প্রতিষ্ঠানটি নিরলস কাজ করে যাচ্ছে।
           </p>
         </div>
       </div>
@@ -32,16 +32,17 @@ export default function AboutContact() {
           </div>
           <h4 className="font-extrabold text-slate-800 text-sm md:text-base">১:১ কম্পিউটার ও সেশন</h4>
           <p className="text-slate-550 text-xs leading-relaxed">
-            প্রতিটি শিক্ষার্থীর জন্য রয়েছে পৃথক কম্পিউটার এবং প্রজেক্টর ল্যাবের মাধ্যমে লাইভ অনুশীলন সুবিধা। কোনো শেয়ারিং নয়!
+            প্রতিটি শিক্ষার্থীর জন্য রয়েছে পৃথক কম্পিউটার এবং অনুশীলন সুবিধা। কোনো শেয়ারিং নয়!
           </p>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-left space-y-3">
           <div className="w-10 h-10 bg-indigo-50 text-indigo-650 rounded-xl flex items-center justify-center">
             <ShieldCheck className="w-5 h-5" />
           </div>
-          <h4 className="font-extrabold text-slate-800 text-sm md:text-base">সরকারি অনুমোদিত সিলেবাস</h4>
+          <h4 className="font-extrabold text-slate-800 text-sm md:text-base">ডাক বি
+          বাভাগ অনুমোদিত</h4>
           <p className="text-slate-550 text-xs leading-relaxed">
-            কারিগরি শিক্ষা বোর্ড (BTEB) অনুমোদিত কোর্স প্যাটার্ন ও সার্টিফিকেশন মানদণ্ড অনুযায়ী আমরা শিক্ষা দান করি।
+            ডাক বিভাগ অনুমোদিত কোর্স প্যাটার্ন ও সার্টিফিকেশন মানদণ্ড অনুযায়ী আমরা শিক্ষা দান করি।
           </p>
         </div>
         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm text-left space-y-3">
@@ -59,7 +60,7 @@ export default function AboutContact() {
       <div className="space-y-4">
         <div className="text-left border-b border-slate-100 pb-2">
           <h4 className="font-extrabold text-slate-800 text-base">আমাদের কম্পিউটার ল্যাব ও একাডেমি গ্যালারি</h4>
-          <p className="text-xs text-slate-500">স্বপ্ন কম্পিউটারের নিয়মিত ক্লাস এবং সাফল্যের খণ্ডচিত্রগুলো দেখুন।</p>
+          <p className="text-xs text-slate-500">Swapno Computer</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {GALLERY_IMAGES.map((img) => (
@@ -96,7 +97,7 @@ export default function AboutContact() {
                 </div>
                 <div>
                   <strong className="text-slate-800 text-xs block mb-0.5">আমাদের ল্যাব অবস্থান:</strong>
-                  <span>মোহাম্মদ সাইদের বিল্ডিং, তরাইল মোড় সংলগ্ন, আমান বাজার, হাটহাজারী, চট্টগ্রাম।</span>
+                  <span> ইব্রাহিম মার্কেট ২য় তলা, কলেজ রোড, আমান বাজার, হাটহাজারী, চট্টগ্রাম।</span>
                 </div>
               </div>
 
@@ -117,7 +118,7 @@ export default function AboutContact() {
                 </div>
                 <div>
                   <strong className="text-slate-800 text-xs block mb-0.5">ইমেইল ঠিকানা (Email):</strong>
-                  <span className="font-mono">swapnocomputer@gmail.com</span>
+                  <span className="font-mono">#</span>
                 </div>
               </div>
 
@@ -127,7 +128,7 @@ export default function AboutContact() {
                 </div>
                 <div>
                   <strong className="text-slate-800 text-xs block mb-0.5">সাপ্তাহিক কর্মঘণ্টা:</strong>
-                  <span>শনিবার থেকে বৃহস্পতিবার (সকাল ৯:০০ টা - রাত ৮:০০ টা) । শুক্রবার সাপ্তাহিক বন্ধ।</span>
+                  <span>শনিবার থেকে বৃহস্পতিবার (সকাল ১০:০০ টা - সন্ধা ৭:০০ টা) । শুক্রবার সাপ্তাহিক বন্ধ।</span>
                 </div>
               </div>
             </div>
@@ -139,7 +140,7 @@ export default function AboutContact() {
           <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm h-full flex flex-col justify-between space-y-4">
             <div className="space-y-1">
               <h4 className="font-extrabold text-slate-800 text-base">হাটহাজারী রোড থেকে আসার রুট ম্যাপ</h4>
-              <p className="text-xs text-slate-500">চট্টগ্রাম শহরের অক্সিজেন মোড় হয়ে হাটহাজারী রোডে আমান বাজার বাসস্ট্যান্ড নামলেই সহজে পাওয়া যাবে।</p>
+              <p className="text-xs text-slate-500">চট্টগ্রাম শহরের অক্সিজেন মোড় হয়ে হাটহাজারী রোডে আমান মোড়</p>
             </div>
             
             {/* Visual static map representation */}
@@ -154,13 +155,13 @@ export default function AboutContact() {
                 </div>
                 <div className="text-[11px] text-slate-500 space-y-1 select-none font-medium">
                   <p>⛽ অক্সিজেন মোড় (২ কিমি দুরে) •••••• [চট্টগ্রাম-হাটহাজারী রোড] •••••• 🕌 আমান বাজার জামে মসজিদ</p>
-                  <p className="font-bold text-slate-800">📍 ব্রোকার কলোনি রোড / তরাইল রোড ক্রসিং সংলগ্ন - ওপরে ২য় তলা</p>
+                  <p className="font-bold text-slate-800">📍 কলেজ রোড / ইব্রাহিম মার্কেট - ওপরে ২য় তলা</p>
                 </div>
               </div>
             </div>
 
             <div className="bg-indigo-50 p-3 rounded-xl text-[11px] text-indigo-900 border border-indigo-100 font-medium">
-              💡 <strong>সহজে খুঁজে পেতে:</strong> আমাদের ল্যাবে আসার আগে পরিচালক সাঈদ স্যারকে কল দিন। আপনি আমান বাজার স্ট্যান্ড থামলে আমরা আপনাকে রিসিভ করার ব্যবস্থা করতে পারব।
+              💡 <strong>সহজে খুঁজে পেতে:</strong> আমাদের ল্যাবে আসার আগে পরিচালক সাঈদ স্যারকে কল দিন। আপনি আমান বাজার মোড় নামলে আমরা আপনাকে রিসিভ করার ব্যবস্থা করতে পারব।
             </div>
           </div>
         </div>
