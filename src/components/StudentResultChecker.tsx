@@ -19,6 +19,7 @@ export default function StudentResultChecker({ students, results }: ResultChecke
   const [showResultCard, setShowResultCard] = useState(false);
   const [needPinVerfication, setNeedPinVerfication] = useState(false);
   const [matchedStudent, setMatchedStudent] = useState<Student | null>(null);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
 
   const handleQueryRoll = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,10 +67,13 @@ export default function StudentResultChecker({ students, results }: ResultChecke
     const element = document.getElementById("result-card-content");
     if (!element) return;
     
-    // Hide action buttons during export
+    // Hide action buttons and clear layout transforms temporarily
     const actionsDiv = element.querySelector('.no-print') as HTMLElement;
     const originalDisplay = actionsDiv ? actionsDiv.style.display : '';
     if (actionsDiv) actionsDiv.style.display = 'none';
+    
+    const originalTransform = element.style.transform;
+    element.style.transform = "none";
     
     try {
       const canvas = await html2canvas(element, { 
@@ -116,6 +120,7 @@ export default function StudentResultChecker({ students, results }: ResultChecke
     } catch (error) {
       console.error("PDF generation failed:", error);
     } finally {
+      element.style.transform = originalTransform;
       if (actionsDiv) actionsDiv.style.display = originalDisplay;
     }
   };
@@ -317,7 +322,6 @@ export default function StudentResultChecker({ students, results }: ResultChecke
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               className="bg-white p-6 md:p-10 rounded-3xl border border-indigo-100 shadow-xl shadow-indigo-50/20 relative space-y-6 print-card overflow-hidden"
-              style={{ contentVisibility: "auto" }}
             >
               {/* Premium Print Layout CSS Injector */}
               <style dangerouslySetInnerHTML={{ __html: `
@@ -519,7 +523,7 @@ export default function StudentResultChecker({ students, results }: ResultChecke
 
               {/* Badge Overlay for web UI */}
               <div className="absolute top-5 right-5 no-print uppercase tracking-widest text-[9px] bg-indigo-50 border border-indigo-100 rounded-lg py-1 px-3 text-indigo-700 font-bold">
-                অফিসিয়াল মডেল টেস্ট ট্রান্সক্রিপ্ট
+                {studentResult.examType === "final_exam" ? "ফাইনাল বোর্ড পরীক্ষা ট্রান্সক্রিপ্ট" : "মডেল টেস্ট ট্রান্সক্রিপ্ট"}
               </div>
 
               {/* Institute Branding on Certificate Header */}
@@ -740,10 +744,15 @@ export default function StudentResultChecker({ students, results }: ResultChecke
                 <button
                   type="button"
                   onClick={handleDownloadPDF}
-                  className="bg-emerald-650 hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-100 text-white rounded-xl py-2.5 px-5 text-xs font-extrabold transition-all flex items-center gap-1.5 cursor-pointer"
+                  disabled={generatingPdf}
+                  className={`${generatingPdf ? 'bg-slate-400' : 'bg-emerald-650 hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-100'} text-white rounded-xl py-2.5 px-5 text-xs font-extrabold transition-all flex items-center gap-1.5 cursor-pointer`}
                 >
-                  <Download className="w-3.5 h-3.5" />
-                  রেজাল্ট PDF ডাউনলোড করুন
+                  {generatingPdf ? (
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Download className="w-3.5 h-3.5" />
+                  )}
+                  {generatingPdf ? "জেনারেটিং পিডিএফ..." : "রেজাল্ট PDF ডাউনলোড করুন"}
                 </button>
                 <button
                   type="button"
