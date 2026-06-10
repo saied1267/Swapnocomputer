@@ -22,16 +22,19 @@ export default function NoticeBoardView({ notices, onLike, onAddComment }: Notic
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
       {/* Page Header */}
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-indigo-50 border border-indigo-100 rounded-full text-indigo-700 text-xs font-black no-print">
-          <Megaphone className="w-3.5 h-3.5 animate-bounce" />
-          <span>লাইভ নোটিশ ও এনাউন্সমেন্ট</span>
+      <div className="text-center space-y-4 bg-white p-10 rounded-3xl border border-slate-100 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
+          <Megaphone className="w-32 h-32 text-indigo-500" />
         </div>
-        <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-          ইনস্টিটিউট অফিসিয়াল নোটিশ বোর্ড
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-100 rounded-full text-amber-700 text-[10px] font-black no-print uppercase tracking-widest">
+          <Sparkles className="w-3 h-3 animate-pulse" />
+          <span>Official Announcements</span>
+        </div>
+        <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+          ইনস্টিটিউট ডিজিটাল <span className="text-indigo-600">নোটিশ বোর্ড</span>
         </h2>
-        <p className="text-slate-500 text-sm md:text-base max-w-xl mx-auto leading-relaxed">
-          স্বপ্ন কম্পিউটার ইনস্টিটিউট-এর ভর্তি বিজ্ঞপ্তি, পরীক্ষার সূচি, ছুটির নোটিশ ও অফিসিয়াল খবরাখবর সবার আগে এখানে দেখুন।
+        <p className="text-slate-500 text-sm md:text-base max-w-xl mx-auto leading-relaxed font-medium">
+          স্বপ্ন কম্পিউটার ট্রেনিং সেন্টারের সকল গুরুত্বপূর্ণ আপডেট এবং অফিসিয়াল ঘোষণাগুলো এখানে পেয়ে যাবেন।
         </p>
       </div>
 
