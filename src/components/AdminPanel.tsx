@@ -87,6 +87,7 @@ export default function AdminPanel({
 
   // Form State: Add/Update Student Result
   const [resRoll, setResRoll] = useState("");
+  const [resExamType, setResExamType] = useState<"model_test" | "final_exam">("model_test");
   const [resMcq, setResMcq] = useState(0);
   const [resPractical, setResPractical] = useState(0);
   const [resViva, setResViva] = useState(0);
@@ -94,12 +95,18 @@ export default function AdminPanel({
   const [resPdfUrl, setResPdfUrl] = useState("");
   const [resSuccessMessage, setResSuccessMessage] = useState("");
 
+  const [customPinInput, setCustomPinInput] = useState("");
+  const [showSettings, setShowSettings] = useState(false);
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorInput("");
 
-    // Admin PINS are either 40404343 or ;M7#@F!9qL$
-    if (adminPin.trim() === "40404343" || adminPin.trim() === ";M7#@F!9qL$") {
+    const customPin = localStorage.getItem("swapno_custom_admin_pin");
+    const validPins = ["40404343", ";M7#@F!9qL$"];
+    if (customPin) validPins.push(customPin);
+
+    if (validPins.includes(adminPin.trim())) {
       try {
         sessionStorage.setItem("swapno_it_is_admin", "true");
       } catch (err) {
@@ -230,7 +237,7 @@ export default function AdminPanel({
 
     const totalMarks = Number(resMcq) + Number(resPractical) + Number(resViva);
     
-    // Calculate Point and Grade
+    // Calculate Point and Grade using standard grading scale
     let gpaPoint = 0;
     let gpaGrade = "F";
     if (totalMarks >= 80) { gpaPoint = 5.0; gpaGrade = "A+"; }
@@ -238,11 +245,13 @@ export default function AdminPanel({
     else if (totalMarks >= 60) { gpaPoint = 3.5; gpaGrade = "A-"; }
     else if (totalMarks >= 50) { gpaPoint = 3.0; gpaGrade = "B"; }
     else if (totalMarks >= 40) { gpaPoint = 2.0; gpaGrade = "C"; }
+    else if (totalMarks >= 33) { gpaPoint = 1.0; gpaGrade = "D"; }
 
     const newResult: ModelTestResult = {
       roll: resRoll,
       name: linkedStudent.name,
       course: linkedStudent.course,
+      examType: resExamType,
       mcqMarks: Number(resMcq),
       practicalMarks: Number(resPractical),
       vivaMarks: Number(resViva),
@@ -457,6 +466,13 @@ export default function AdminPanel({
             ল্যাব গ্যালারি ছবি ({coachingPhotos.length})
           </button>
           <button
+            onClick={() => setShowSettings(true)}
+            className="px-3 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5"
+          >
+            <Key className="w-3.5 h-3.5" />
+            পাসওয়ার্ড পরিবর্তন
+          </button>
+          <button
             onClick={handleLogOut}
             className="px-3 py-2 bg-slate-100 text-slate-600 hover:bg-red-50 hover:text-red-600 rounded-xl text-xs font-bold transition-all cursor-pointer"
           >
@@ -653,36 +669,51 @@ export default function AdminPanel({
             </div>
 
             <form onSubmit={handleResultSubmit} className="space-y-4 text-left">
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-500">শিক্ষার্থী নির্বাচন করুন (Roll & Name)</label>
-                <select
-                  value={resRoll}
-                  onChange={(e) => {
-                    setResRoll(e.target.value);
-                    const existingRes = results.find(r => r.roll === e.target.value);
-                    if (existingRes) {
-                      setResMcq(existingRes.mcqMarks);
-                      setResPractical(existingRes.practicalMarks);
-                      setResViva(existingRes.vivaMarks);
-                      setResRemarks(existingRes.remarks);
-                      setResPdfUrl(existingRes.pdfUrl || "");
-                    } else {
-                      setResMcq(0);
-                      setResPractical(0);
-                      setResViva(0);
-                      setResRemarks("");
-                      setResPdfUrl("");
-                    }
-                  }}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500"
-                >
-                  <option value="">-- রোল সিলেক্ট করুন --</option>
-                  {students.map(s => (
-                    <option key={s.roll} value={s.roll}>
-                      রোল: {s.roll} | {s.name} ({s.course})
-                    </option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-500">শিক্ষার্থী নির্বাচন করুন (Roll & Name)</label>
+                  <select
+                    value={resRoll}
+                    onChange={(e) => {
+                      setResRoll(e.target.value);
+                      const existingRes = results.find(r => r.roll === e.target.value);
+                      if (existingRes) {
+                        setResExamType(existingRes.examType || "model_test");
+                        setResMcq(existingRes.mcqMarks);
+                        setResPractical(existingRes.practicalMarks);
+                        setResViva(existingRes.vivaMarks);
+                        setResRemarks(existingRes.remarks);
+                        setResPdfUrl(existingRes.pdfUrl || "");
+                      } else {
+                        setResExamType("model_test");
+                        setResMcq(0);
+                        setResPractical(0);
+                        setResViva(0);
+                        setResRemarks("");
+                        setResPdfUrl("");
+                      }
+                    }}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  >
+                    <option value="">-- রোল সিলেক্ট করুন --</option>
+                    {students.map(s => (
+                      <option key={s.roll} value={s.roll}>
+                        রোল: {s.roll} | {s.name} ({s.course})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-500">পরীক্ষার ধরন</label>
+                  <select
+                    value={resExamType}
+                    onChange={(e) => setResExamType(e.target.value as "model_test" | "final_exam")}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500"
+                  >
+                    <option value="model_test">মডেল টেস্ট</option>
+                    <option value="final_exam">ফাইনাল বোর্ড পরীক্ষা</option>
+                  </select>
+                </div>
               </div>
 
               <div className="grid grid-cols-3 gap-3">
@@ -1400,7 +1431,7 @@ export default function AdminPanel({
                 <input
                   type="text"
                   required
-                  placeholder="যেমন: ইশরাত জাহান খুশি"
+                  placeholder="যেমন: ইশরাত জাহান "
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-rose-500"
@@ -1534,6 +1565,53 @@ export default function AdminPanel({
                 {isEditingStudent ? "তথ্য সংরক্ষণ করুণ" : "নতুন শিক্ষার্থী এনরোল করুন"}
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Admin Settings Modal */}
+      {showSettings && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm flex justify-center items-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl">
+            <div className="bg-slate-50 px-5 py-4 flex justify-between items-center border-b border-slate-100">
+              <h4 className="font-extrabold text-slate-800 text-sm">অ্যাডমিন সেটিংস</h4>
+              <button
+                onClick={() => {
+                  setShowSettings(false);
+                  setCustomPinInput("");
+                }}
+                className="text-slate-400 hover:text-slate-600 bg-white p-1 rounded-full shadow-sm hover:shadow transition-all"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="p-5 space-y-4 text-left">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-500">নতুন অ্যাডমিন পাসওয়ার্ড (পিন)</label>
+                <input
+                  type="text"
+                  value={customPinInput}
+                  onChange={(e) => setCustomPinInput(e.target.value)}
+                  placeholder="নতুন পিন লিখুন"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500"
+                />
+              </div>
+              <button
+                onClick={() => {
+                  if(customPinInput.trim().length >= 4) {
+                    localStorage.setItem("swapno_custom_admin_pin", customPinInput.trim());
+                    alert("নতুন পাসওয়ার্ড সফলভাবে সংরক্ষিত হয়েছে!");
+                    setShowSettings(false);
+                    setCustomPinInput("");
+                  } else {
+                    alert("পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে।");
+                  }
+                }}
+                className="w-full bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl text-xs transition-colors cursor-pointer"
+              >
+                পাসওয়ার্ড পরিবর্তন করুন
+              </button>
+            </div>
           </div>
         </div>
       )}
