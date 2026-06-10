@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ThumbsUp, MessageSquare, Send, User, Calendar } from "lucide-react";
+import { ThumbsUp, MessageSquare, Send, User, Calendar, Sparkles, Megaphone } from "lucide-react";
 import { Notice } from "../types";
 
 interface HomeNoticeCardProps {
@@ -34,36 +34,62 @@ export default function HomeNoticeCard({
     // Keep author name so they don't have to retype if they post again
   };
 
+  const isNew = (() => {
+    try {
+      const noticeDate = new Date(notice.date);
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - noticeDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays <= 3;
+    } catch {
+      return false;
+    }
+  })();
+
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0 }}
-      className="bg-white rounded-2xl border border-slate-100 shadow-xs hover:shadow-md transition-shadow duration-300 overflow-hidden text-left"
+      className="bg-white rounded-3xl border border-indigo-100/60 shadow-xl shadow-indigo-100/30 hover:shadow-2xl hover:shadow-indigo-200/40 transition-all duration-300 overflow-hidden text-left relative"
     >
+      <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+        <Sparkles className="w-24 h-24 text-indigo-500" />
+      </div>
+
       {/* Accent Header */}
-      <div className="bg-indigo-50/40 px-5 py-3 border-b border-slate-50 flex items-center justify-between">
-        <span className="inline-flex items-center gap-1.5 bg-indigo-100 text-indigo-750 px-2.5 py-1 rounded-md text-[10px] font-black uppercase tracking-wider">
-          📢 প্রাতিষ্ঠানিক নোটিশ
-        </span>
-        <div className="flex items-center gap-1 text-[11px] text-slate-450 font-bold font-mono">
-          <Calendar className="w-3.5 h-3.5 text-slate-400" />
+      <div className="bg-gradient-to-r from-indigo-50/80 to-purple-50/80 px-6 py-4 flex items-center justify-between border-b border-indigo-100/50">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center gap-2 bg-white text-indigo-700 border border-indigo-100/50 px-3 py-1.5 rounded-full text-xs font-black tracking-wider shadow-sm">
+            <Megaphone className="w-3.5 h-3.5 text-indigo-500" />
+            প্রাতিষ্ঠানিক নোটিশ
+          </span>
+          {isNew && (
+            <span className="bg-rose-500 text-white text-[9px] font-black px-2 py-1 rounded-md animate-pulse uppercase tracking-widest">
+              NEW
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-1.5 text-xs text-slate-500 font-bold bg-white/60 px-3 py-1.5 rounded-full border border-white/40 shadow-sm backdrop-blur-sm">
+          <Calendar className="w-3.5 h-3.5 text-indigo-400" />
           <span>{notice.date}</span>
         </div>
       </div>
 
       {/* Main Body */}
-      <div className="p-5 sm:p-6 space-y-4">
-        <h4 className="font-black text-slate-800 text-base md:text-lg leading-snug">
+      <div className="p-6 sm:p-8 space-y-4">
+        <h4 className="font-extrabold text-slate-900 text-lg md:text-xl leading-tight tracking-tight pr-8">
           {notice.title}
         </h4>
-        <p className="text-slate-650 text-xs md:text-sm leading-relaxed whitespace-pre-line">
-          {notice.content}
-        </p>
+        <div className="prose prose-sm md:prose-base prose-slate max-w-none text-slate-600 font-medium leading-relaxed">
+          {notice.content.split('\n').map((line, i) => (
+            <p key={i} className="mb-2">{line}</p>
+          ))}
+        </div>
 
         {/* Action Row */}
-        <div className="pt-4 border-t border-slate-50 flex items-center justify-between text-xs font-bold text-slate-500">
+        <div className="pt-6 mt-4 border-t border-slate-100/80 flex justify-between items-center text-xs font-bold text-slate-500 relative z-10">
           <button
             type="button"
             onClick={() => onLike(notice.id)}
