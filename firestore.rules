@@ -51,5 +51,27 @@ service cloud.firestore {
         && request.resource.data.mobile is string;
       allow delete: if true;
     }
+
+    // Live Student Chat System
+    match /chatMessages/{messageId} {
+      allow read: if true;
+      allow create: if request.resource.data.id == messageId
+        && request.resource.data.senderRoll is string
+        && request.resource.data.receiverRoll is string
+        && request.resource.data.text is string;
+      allow delete: if true;
+    }
+
+    // PDF Sheets
+    match /pdfSheets/{sheetId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
+
+    // Coaching Photos
+    match /coachingPhotos/{photoId} {
+      allow read: if true;
+      allow create, update, delete: if true;
+    }
   }
 }
