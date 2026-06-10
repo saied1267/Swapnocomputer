@@ -150,380 +150,63 @@ export default function App() {
     }
   };
 
-  // Seeding effect on component mount
+  // Optimized multi-stage data loader & background synchronizer
   useEffect(() => {
-    const loadAndSeedData = async () => {
-      let offlineMode = false;
-      let errorMsgStr = "";
-      let dbStudents: Student[] = [];
-      let dbResults: ModelTestResult[] = [];
-      let dbNotices: Notice[] = [];
-      let dbMessages: VisitorMessage[] = [];
-      let dbPdfSheets: PdfSheet[] = [];
-      let dbCoachingPhotos: CoachingPhoto[] = [];
+    const loadAllData = async () => {
+      setLoading(true);
+      let isOffline = false;
+      let errorStr = "";
 
       try {
-        // Try testing connection by reading students collection
-        try {
-          dbStudents = await fetchStudents();
-          if (dbStudents.length < 20) {
-            for (const s of INITIAL_STUDENTS) {
-              await setDoc(doc(db, "students", s.roll), s);
-            }
-            dbStudents = await fetchStudents();
-          }
-        } catch (e: any) {
-          console.warn("Firestore collection 'students' failed. Enforcing offline fallback.", e);
-          offlineMode = true;
-          errorMsgStr = e?.message || String(e);
+        const [
+          cloudStudents,
+          cloudResults,
+          cloudNotices,
+          cloudMessages,
+          cloudPdfSheets,
+          cloudPhotos
+        ] = await Promise.all([
+          fetchStudents(),
+          fetchResults(),
+          fetchNoticesFromFirestore(),
+          fetchVisitorMessages(),
+          fetchPdfSheets(),
+          fetchCoachingPhotos()
+        ]);
+
+        setStudents(cloudStudents.length > 0 ? cloudStudents : INITIAL_STUDENTS);
+        setResults(cloudResults.length > 0 ? cloudResults : INITIAL_RESULTS);
+        setNotices(cloudNotices);
+        setVisitorMessages(cloudMessages);
+        setPdfSheets(cloudPdfSheets);
+        setCoachingPhotos(cloudPhotos);
+
+        // Background seeding if empty
+        if (cloudStudents.length < 5) {
+          INITIAL_STUDENTS.forEach(s => setDoc(doc(db, "students", s.roll), s));
+        }
+        if (cloudResults.length < 5) {
+          INITIAL_RESULTS.forEach(r => setDoc(doc(db, "results", r.roll), r));
         }
 
-        if (!offlineMode) {
-          try {
-            dbResults = await fetchResults();
-            if (dbResults.length < 20) {
-              for (const r of INITIAL_RESULTS) {
-                await setDoc(doc(db, "results", r.roll), r);
-              }
-              dbResults = await fetchResults();
-            }
-          } catch (e: any) {
-            console.warn("Firestore collection 'results' failed.", e);
-            offlineMode = true;
-            errorMsgStr = e?.message || String(e);
-          }
-        }
-
-        if (!offlineMode) {
-          try {
-            dbNotices = await fetchNoticesFromFirestore();
-            if (dbNotices.length === 0) {
-              const presetNotices = [
-                {
-                  id: "preset-notice-1",
-                  title: "কম্পিউটার অফিস অ্যাপ্লিকেশন ১ম মডেল টেস্ট পরীক্ষার সময়সূচী 📢",
-                  content: "সম্মানিত শিক্ষার্থীবৃন্দ, আগামী ১৫ই জুন, ২০২৬ তারিখ রোজ রবিবার সকাল ১০:০০ ঘটিকায় আমাদের ল্যাবে কম্পিউটার অফিস অ্যাপ্লিকেশন কোর্সের প্রথম সেশন মডেল টেস্ট পরীক্ষা অনুষ্ঠিত হবে। পরীক্ষায় পাস করার জন্য নূন্যতম ৪০% নম্বর পেতে হবে। সকল নিয়মিত শিক্ষার্থীকে প্রবেশপত্র ও খাতা সহ উপস্থিত থাকার জন্য নির্দেশ দেওয়া যাচ্ছে।",
-                  date: "2026-06-09",
-                  likesCount: 14,
-                },
-                {
-                  id: "preset-notice-2",
-                  title: "পবিত্র ঈদুল আযহা উপলক্ষে সরকারি ছুটি ও নোটিশ 🌙",
-                  content: "স্বপ্ন কম্পিউটার ট্রেনিং সেন্টারের সকল শিক্ষার্থীদের অবগতির জন্য জানানো যাচ্ছে যে, পবিত্র ঈদুল আযহা উপলক্ষে আগামী ১২ই জুন থেকে ১৭ই জুন পর্যন্ত সকল অফলাইন থিউরি ও প্র্যাক্টিক্যাল ক্লাস বন্ধ থাকবে। আগামী ১৮ই জুন রোজ বৃহস্পতিবার থেকে যথারীতি সব ব্যাচের ক্লাস শুরু হবে। সবাইকে অগ্রিম পবিত্র ঈদ-উল-আযহার শুভেচ্ছা, ঈদ মোবারক!",
-                  date: "2026-06-08",
-                  likesCount: 25,
-                }
-              ];
-
-              const notice1Comments = [
-                {
-                  id: "cmt-1",
-                  authorName: "মিনহাজুল কবির",
-                  text: "ইনশাআল্লাহ স্যার, আমরা সবাই প্রস্তুতি নিচ্ছি। পরীক্ষা দেওয়ার জন্য ল্যাবে নির্দিষ্ট পিসি এলোকেশন করা থাকবে কি?",
-                  date: "2026-06-09"
-                },
-                {
-                  id: "cmt-2",
-                  authorName: "সাঈদ স্যার (পরিচালক)",
-                  text: "হ্যাঁ মিনহাজ, ল্যাবের ১ থেকে ১০ নম্বর পিসিতে এই টেস্ট হবে। সকালের ব্যাচের জন্য আলাদা সেট থাকবে।",
-                  date: "2026-06-09"
-                }
-              ];
-
-              const notice2Comments = [
-                {
-                  id: "cmt-3",
-                  authorName: "ফারহানা মিলি",
-                  text: "সবাইকে ঈদ মোবারক! ছুটির পর আবারো ল্যাবে দেখা হবে ইনশাআল্লাহ।",
-                  date: "2026-06-08"
-                }
-              ];
-
-              for (const n of presetNotices) {
-                await setDoc(doc(db, "notices", n.id), n);
-              }
-              for (const c of notice1Comments) {
-                await setDoc(doc(db, "notices/preset-notice-1/comments", c.id), c);
-              }
-              for (const c of notice2Comments) {
-                await setDoc(doc(db, "notices/preset-notice-2/comments", c.id), c);
-              }
-
-              dbNotices = [
-                { ...presetNotices[0], comments: notice1Comments, likedByUser: false },
-                { ...presetNotices[1], comments: notice2Comments, likedByUser: false }
-              ];
-            }
-          } catch (e: any) {
-            console.warn("Firestore collection 'notices' failed.", e);
-            offlineMode = true;
-            errorMsgStr = e?.message || String(e);
-          }
-        }
-
-        if (!offlineMode) {
-          try {
-            dbMessages = await fetchVisitorMessages();
-            if (dbMessages.length === 0) {
-              const presetMessages = [
-                {
-                  id: "preset-1",
-                  name: "মোহাম্মদ রাশেদ",
-                  mobile: "01819882211",
-                  courseOfInterest: "Computer Office Application",
-                  message: "আমি ৩ মাসের সার্টিফিকেট কোর্সটি করতে আগ্রহী, সকালের কোনো ব্যাচ আছে কি স্যার?",
-                  date: "2026-06-08"
-                },
-                {
-                  id: "preset-2",
-                  name: "ফারহানা আক্তার মিলি",
-                  mobile: "01722667788",
-                  courseOfInterest: "Graphic Design & Multimedia",
-                  message: "বাসায় প্র্যাকটিসের জন্য কম্পিউটার থাকা কি বাধ্যতামূলক?",
-                  date: "2026-06-09"
-                }
-              ];
-              for (const m of presetMessages) {
-                await setDoc(doc(db, "visitorMessages", m.id), m);
-              }
-              dbMessages = presetMessages;
-            }
-          } catch (e: any) {
-            console.warn("Firestore collection 'visitorMessages' failed.", e);
-            offlineMode = true;
-            errorMsgStr = e?.message || String(e);
-          }
-        }
-
-        if (!offlineMode) {
-          try {
-            dbPdfSheets = await fetchPdfSheets();
-            if (dbPdfSheets.length === 0) {
-              const presetSheets: PdfSheet[] = [
-                {
-                  id: "sheet-1",
-                  title: "৩ মাস ও ৬ মাস মেয়াদী কম্পিউটার অফিস অ্যাপ্লিকেশন মডেল টেস্ট গাইড ২০২৬",
-                  course: "Computer Office Application",
-                  downloadUrl: "https://www.bteb.gov.bd/sites/default/files/files/bteb.portal.gov.bd/notices/e0d16be3_8cff_4370_9557_94086d79040c/2024-03-24-11-53-73ba50eb340c265a7d65b11ba90ca7b6.pdf",
-                  uploader: "মোহাম্মদ সাঈদ স্যার",
-                  date: "2026-06-10",
-                  fileSize: "2.4 MB"
-                },
-                {
-                  id: "sheet-2",
-                  title: "মাইক্রোসফট ওয়ার্ড ও এক্সেল সর্টকাট কীবোর্ড কমান্ড শিট ও প্রজেক্ট সাজেশন্স",
-                  course: "Computer Office Application",
-                  downloadUrl: "https://www.bteb.gov.bd/sites/default/files/files/bteb.portal.gov.bd/notices/e0d16be3_8cff_4370_9557_94086d79040c/2024-03-24-11-53-73ba50eb340c265a7d65b11ba90ca7b6.pdf",
-                  uploader: "মোহাম্মদ সাঈদ স্যার",
-                  date: "2026-06-09",
-                  fileSize: "1.1 MB"
-                }
-              ];
-              for (const s of presetSheets) {
-                await setDoc(doc(db, "pdfSheets", s.id), s);
-              }
-              dbPdfSheets = presetSheets;
-            }
-          } catch (e: any) {
-            console.warn("Firestore collection 'pdfSheets' failed.", e);
-          }
-        }
-
-        if (!offlineMode) {
-          try {
-            dbCoachingPhotos = await fetchCoachingPhotos();
-            if (dbCoachingPhotos.length === 0) {
-              const presetPhotos: CoachingPhoto[] = GALLERY_IMAGES.map((img) => ({
-                id: `db-photo-${img.id}`,
-                title: img.title,
-                description: img.description,
-                url: img.url,
-                date: "সংরক্ষিত"
-              }));
-              for (const p of presetPhotos) {
-                await setDoc(doc(db, "coachingPhotos", p.id), p);
-              }
-              dbCoachingPhotos = presetPhotos;
-            }
-          } catch (e: any) {
-            console.warn("Firestore collection 'coachingPhotos' failed.", e);
-          }
-        }
-
-        if (offlineMode) {
-          setUsingFallbackLocalStorage(true);
-          try {
-            const parsed = JSON.parse(errorMsgStr);
-            setDbErrorMessage(parsed.error || errorMsgStr);
-          } catch {
-            setDbErrorMessage(errorMsgStr);
-          }
-
-          // Load from LocalStorage
-          const localStudents = localStorage.getItem("swapno_students");
-          const localResults = localStorage.getItem("swapno_results");
-          const localNotices = localStorage.getItem("swapno_notices");
-          const localMessages = localStorage.getItem("swapno_messages");
-
-          if (localStudents) {
-            const parsedS = JSON.parse(localStudents);
-            if (parsedS.length < 20) {
-              setStudents(INITIAL_STUDENTS);
-              localStorage.setItem("swapno_students", JSON.stringify(INITIAL_STUDENTS));
-            } else {
-              setStudents(parsedS);
-            }
-          } else {
-            setStudents(INITIAL_STUDENTS);
-            localStorage.setItem("swapno_students", JSON.stringify(INITIAL_STUDENTS));
-          }
-
-          if (localResults) {
-            const parsedR = JSON.parse(localResults);
-            if (parsedR.length < 20) {
-              setResults(INITIAL_RESULTS);
-              localStorage.setItem("swapno_results", JSON.stringify(INITIAL_RESULTS));
-            } else {
-              setResults(parsedR);
-            }
-          } else {
-            setResults(INITIAL_RESULTS);
-            localStorage.setItem("swapno_results", JSON.stringify(INITIAL_RESULTS));
-          }
-
-          if (localNotices) {
-            setNotices(JSON.parse(localNotices));
-          } else {
-            const presetNoticesLocal = [
-              {
-                id: "preset-notice-1",
-                title: "কম্পিউটার অফিস অ্যাপ্লিকেশন ১ম মডেল টেস্ট পরীক্ষার সময়সূচী 📢",
-                content: "সম্মানিত শিক্ষার্থীবৃন্দ, আগামী ১৫ই জুন, ২০২৬ তারিখ রোজ রবিবার সকাল ১০:০০ ঘটিকায় আমাদের ল্যাবে কম্পিউটার অফিস অ্যাপ্লিকেশন কোর্সের প্রথম সেশন মডেল টেস্ট পরীক্ষা অনুষ্ঠিত হবে। পরীক্ষায় পাস করার জন্য নূন্যতম ৪০% নম্বর পেতে হবে। সকল নিয়মিত শিক্ষার্থীকে প্রবেশপত্র ও খাতা সহ উপস্থিত থাকার জন্য নির্দেশ দেওয়া যাচ্ছে।",
-                date: "2026-06-09",
-                likesCount: 14,
-                comments: [
-                  {
-                    id: "cmt-1",
-                    authorName: "মিনহাজুল কবির",
-                    text: "ইনশাআল্লাহ স্যার, আমরা সবাই প্রস্তুতি নিচ্ছি। পরীক্ষা দেওয়ার জন্য ল্যাবে নির্দিষ্ট পিসি এলোকেশন করা থাকবে কি?",
-                    date: "2026-06-09"
-                  },
-                  {
-                    id: "cmt-2",
-                    authorName: "সাঈদ স্যার (পরিচালক)",
-                    text: "হ্যাঁ মিনহাজ, ল্যাবের ১ থেকে ১০ নম্বর পিসিতে এই টেস্ট হবে। সকালের ব্যাচের জন্য আলাদা সেট থাকবে।",
-                    date: "2026-06-09"
-                  }
-                ],
-                likedByUser: false
-              },
-              {
-                id: "preset-notice-2",
-                title: "পবিত্র ঈদুল আযহা উপলক্ষে সরকারি ছুটি ও নোটিশ 🌙",
-                content: "স্বপ্ন কম্পিউটার ট্রেনিং সেন্টারের সকল শিক্ষার্থীদের অবগতির জন্য জানানো যাচ্ছে যে, পবিত্র ঈদুল আযহা উপলক্ষে আগামী ১২ই জুন থেকে ১৭ই জুন পর্যন্ত সকল অফলাইন থিউরি ও প্র্যাক্টিক্যাল ক্লাস বন্ধ থাকবে। আগামী ১৮ই জুন রোজ বৃহস্পতিবার থেকে যথারীতি সব ব্যাচের ক্লাস শুরু হবে। সবাইকে অগ্রিম পবিত্র ঈদ-উল-আযহার শুভেচ্ছা, ঈদ মোবারক!",
-                date: "2026-06-08",
-                likesCount: 25,
-                comments: [
-                  {
-                    id: "cmt-3",
-                    authorName: "ফারহানা মিলি",
-                    text: "সবাইকে ঈদ মোবারক! ছুটির পর আবারো ল্যাবে দেখা হবে ইনশাআল্লাহ।",
-                    date: "2026-06-08"
-                  }
-                ],
-                likedByUser: false
-              }
-            ];
-            setNotices(presetNoticesLocal);
-            localStorage.setItem("swapno_notices", JSON.stringify(presetNoticesLocal));
-          }
-
-          if (localMessages) {
-            setVisitorMessages(JSON.parse(localMessages));
-          } else {
-            const presetMessagesLocal = [
-              {
-                id: "preset-1",
-                name: "মোহাম্মদ রাশেদ",
-                mobile: "01819882211",
-                courseOfInterest: "Computer Office Application",
-                message: "আমি ৩ মাসের সার্টিফিকেট কোর্সটি করতে আগ্রহী, সকালের কোনো ব্যাচ আছে কি স্যার?",
-                date: "2026-06-08"
-              },
-              {
-                id: "preset-2",
-                name: "ফারহানা আক্তার মিলি",
-                mobile: "01722667788",
-                courseOfInterest: "Graphic Design & Multimedia",
-                message: "বাসায় প্র্যাকটিসের জন্য কম্পিউটার থাকা কি বাধ্যতামূলক?",
-                date: "2026-06-09"
-              }
-            ];
-            setVisitorMessages(presetMessagesLocal);
-            localStorage.setItem("swapno_messages", JSON.stringify(presetMessagesLocal));
-          }
-
-          // Parse or generate offline pdfSheets fallback
-          const localPdfSheets = localStorage.getItem("swapno_pdf_sheets");
-          if (localPdfSheets) {
-            setPdfSheets(JSON.parse(localPdfSheets));
-          } else {
-            const presetSheets: PdfSheet[] = [
-              {
-                id: "sheet-1",
-                title: "৩ মাস ও ৬ মাস মেয়াদী কম্পিউটার অফিস অ্যাপ্লিকেশন মডেল টেস্ট গাইড ২০২৬",
-                course: "Computer Office Application",
-                downloadUrl: "https://www.bteb.gov.bd/sites/default/files/files/bteb.portal.gov.bd/notices/e0d16be3_8cff_4370_9557_94086d79040c/2024-03-24-11-53-73ba50eb340c265a7d65b11ba90ca7b6.pdf",
-                uploader: "মোহাম্মদ সাঈদ স্যার",
-                date: "2026-06-10",
-                fileSize: "2.4 MB"
-              },
-              {
-                id: "sheet-2",
-                title: "মাইক্রোসফট ওয়ার্ড ও এক্সেল সর্টকাট কীবোর্ড কমান্ড শিট ও প্রজেক্ট সাজেশন্স",
-                course: "Computer Office Application",
-                downloadUrl: "https://www.bteb.gov.bd/sites/default/files/files/bteb.portal.gov.bd/notices/e0d16be3_8cff_4370_9557_94086d79040c/2024-03-24-11-53-73ba50eb340c265a7d65b11ba90ca7b6.pdf",
-                uploader: "মোহাম্মদ সাঈদ স্যার",
-                date: "2026-06-09",
-                fileSize: "1.1 MB"
-              }
-            ];
-            setPdfSheets(presetSheets);
-            localStorage.setItem("swapno_pdf_sheets", JSON.stringify(presetSheets));
-          }
-
-          // Parse or generate offline coachingPhotos fallback
-          const localCoachingPhotos = localStorage.getItem("swapno_coaching_photos");
-          if (localCoachingPhotos) {
-            setCoachingPhotos(JSON.parse(localCoachingPhotos));
-          } else {
-            const presetPhotos: CoachingPhoto[] = GALLERY_IMAGES.map((img) => ({
-              id: `db-photo-${img.id}`,
-              title: img.title,
-              description: img.description,
-              url: img.url,
-              date: "সংরক্ষিত"
-            }));
-            setCoachingPhotos(presetPhotos);
-            localStorage.setItem("swapno_coaching_photos", JSON.stringify(presetPhotos));
-          }
-
-        } else {
-          setStudents(dbStudents);
-          setResults(dbResults);
-          setNotices(dbNotices);
-          setVisitorMessages(dbMessages);
-          setPdfSheets(dbPdfSheets);
-          setCoachingPhotos(dbCoachingPhotos);
-        }
       } catch (err: any) {
-        console.error("Critical error in loadAndSeedData: ", err);
+        console.warn("Firestore load failed, using fallback:", err);
+        isOffline = true;
+        errorStr = err.message;
+        setStudents(INITIAL_STUDENTS);
+        setResults(INITIAL_RESULTS);
       } finally {
         setLoading(false);
+        if (isOffline) {
+          setUsingFallbackLocalStorage(true);
+          setDbErrorMessage(errorStr);
+        }
       }
     };
-    loadAndSeedData();
+    loadAllData();
   }, []);
+
+
 
   // System-wide elegant state backup helper
   const activateLocalFallback = (err: any, msg: string) => {
@@ -1017,13 +700,13 @@ export default function App() {
                   <h1 className="text-xl md:text-3xl font-black text-slate-950 tracking-tight flex items-center gap-2 font-sans relative group-hover:text-indigo-750 transition-colors">
                     <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950">স্বপ্ন কম্পিউটার</span> 
                     <span className="text-indigo-600 bg-indigo-50 border border-indigo-200/50 px-2.5 py-0.5 rounded-xl font-extrabold text-base md:text-2xl shadow-3xs relative inline-block animate-[pulse_3s_infinite]">
-                      আইটি
+                      IT
                       <span className="absolute -bottom-0.5 left-0 w-full h-[2.5px] bg-indigo-600 rounded-full"></span>
                     </span>
                   </h1>
                   <p className="text-[10px] md:text-xs text-slate-500 font-extrabold tracking-widest font-mono mt-1 flex items-center gap-1.5 animate-pulse">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse shadow-xs"></span>
-                    SWAPNO COMPUTER IT • ACADEMIC STUDENT PORTAL
+                    SWAPNO COMPUTER • STUDENT PORTAL
                   </p>
                 </div>
               </div>
@@ -1035,7 +718,7 @@ export default function App() {
                 {[
                   { id: "home", label: "হোম" },
                   { id: "courses", label: "কোর্স ও ভর্তি" },
-                  { id: "results", label: "ফলাফল ও চ্যাট" },
+                  { id: "results", label: "ফলাফল " },
                   { id: "notices", label: "নোটিশ বোর্ড" },
                   { id: "pdf-sheets", label: "লেকচার শিট (PDF)" },
                   { id: "about", label: "ল্যাব পরিচিতি" },
@@ -1070,8 +753,8 @@ export default function App() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
             <RefreshCw className="w-8 h-8 text-indigo-600 animate-spin" />
-            <p className="text-sm font-bold text-slate-650">ক্লাউড ডাটাবেজ সংযোগ প্রতিস্থাপন করা হচ্ছে...</p>
-            <p className="text-xs text-slate-400 font-semibold">স্বপ্ন কম্পিউটার ইনস্টিটিউট লাইভ ডাটাবেজ লোড করা হচ্ছে...</p>
+            <p className="text-sm font-bold text-slate-650">Saiyed এআই ডাটাবেজ সংযোগ প্রতিস্থাপন করা হচ্ছে...</p>
+            <p className="text-xs text-slate-400 font-semibold"> Saiyed এআই থেকে লাইভ ডাটাবেজ লোড করা হচ্ছে...</p>
           </div>
         ) : (
           <AnimatePresence mode="wait">
@@ -1085,7 +768,7 @@ export default function App() {
               
               {/* Student Portrait Showcase at the absolute top of the Home page */}
               <div className="bg-white p-5 md:p-6 rounded-3xl border border-slate-100 shadow-xs text-left">
-                <StudentShowcase students={students} isAdmin={isAdmin} />
+                <StudentShowcase students={students} results={results} isAdmin={isAdmin} />
               </div>
 
               {/* Responsive Hero Segment */}
@@ -1096,7 +779,7 @@ export default function App() {
                 <div className="space-y-6 max-w-4xl z-10 relative">
                   <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-750 px-3.5 py-1.5 rounded-full text-xs font-bold">
                     <Flame className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
-                    <span>Hathazari's Ultimate Tech Learning Wing • হাটহাজারীর বিশ্বস্ত কম্পিউটার উইং</span>
+                    <span>Amanbaar • আমানবাজার</span>
                   </div>
                   <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
                     কম্পিউটার শিখুন, <br />
@@ -1121,7 +804,7 @@ export default function App() {
                       onClick={() => navigateTo("results")}
                       className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl py-3 px-6 font-bold text-xs md:text-sm transition-all cursor-pointer"
                     >
-                      <span>পরীক্ষার মার্কশীট ও চ্যাট দেখুন</span>
+                      <span>পরীক্ষার মার্কশীট দেখুন</span>
                     </button>
                   </div>
 
@@ -1214,7 +897,7 @@ export default function App() {
 
                 {/* Registered Student Portrait Showcase (Right part, 5 out of 12 columns) */}
                 <div className="lg:col-span-5 bg-white p-5 md:p-6 rounded-3xl border border-slate-100 shadow-xs">
-                  <StudentShowcase students={students} isAdmin={isAdmin} />
+                  <StudentShowcase students={students} results={results} isAdmin={isAdmin} />
                 </div>
               </div>
 
@@ -1226,12 +909,12 @@ export default function App() {
                 <div className="space-y-2">
                   <h4 className="font-extrabold text-slate-800 text-sm md:text-base flex items-center gap-1.5 leading-snug">
                     <UserCheck className="w-4 h-4 text-indigo-600" />
-                    পরিচালকের ডেক্স থেকে মোহাম্মদ সাঈদ স্যারের শুভেচ্ছা বার্তা
+                    পরিচালকের পক্ষ থেকে মোহাম্মদ সাঈদ ও আসাদ স্যারের শুভেচ্ছা বার্তা
                   </h4>
                   <p className="text-slate-650 italic text-xs md:text-sm leading-relaxed">
                     "প্রিয় তরুণ বন্ধুরা, কম্পিউটার শিক্ষা কোনো বিলাসীতা নয় বরং এটি আধুনিক স্বাবলম্বী হওয়ার মূল হাতিয়ার। স্বপ্ন কম্পিউটারে আমরা কোনো জটিলতা ছাড়া অত্যন্ত সহজ ভাষায় চট্টগ্রামের আঞ্চলিক আবেগের সাথে মিশে বাস্তব প্র্যাক্টিক্যাল শিক্ষা প্রদান করি। আপনাদের দক্ষ গড়ে তোলাই আমার একমাত্র স্বপ্ন।"
                   </p>
-                  <p className="text-[10px] text-slate-400 font-bold block">মোহাম্মদ সাঈদ • পরিচালক, স্বপ্ন টেকনিক্যাল রূপকার কম্পিউটার</p>
+                  <p className="text-[10px] text-slate-400 font-bold block">মোহাম্মদ সাঈদ • পরিচালক, স্বপ্ন টেকনিক্যাল কম্পিউটার </p>
                 </div>
               </div>
 
@@ -1381,10 +1064,10 @@ export default function App() {
           <div className="space-y-4 text-left">
             <div className="flex items-center gap-2 text-white">
               <School className="w-5 h-5 text-indigo-500" />
-              <strong className="text-sm font-bold">স্বপ্ন কম্পিউটার ট্রেনিং</strong>
+              <strong className="text-sm font-bold">স্বপ্ন কম্পিউটার ট্রেনিং সেন্টার</strong>
             </div>
             <p className="text-slate-400 text-xs leading-relaxed">
-              স্বাবলম্বী ক্যারিয়ার গড়ার লক্ষ্যে চট্টগ্রামের হাটহাজারী উপজেলার আমান বাজারে প্রতিষ্ঠিত স্বপ্ন কম্পিউটার আইটি সর্বদা মানসম্মত এবং যুগোপযোগী কম্পিউটার প্রশিক্ষণ দিয়ে আসছে।
+              স্বাবলম্বী ক্যারিয়ার গড়ার লক্ষ্যে চট্টগ্রামের হাটহাজারী উপজেলার আমান বাজারে প্রতিষ্ঠিত স্বপ্ন কম্পিউটার প্রশিক্ষণ কেন্দ্র সর্বদা মানসম্মত এবং যুগোপযোগী কম্পিউটার প্রশিক্ষণ দিয়ে আসছে।
             </p>
           </div>
 
@@ -1411,7 +1094,7 @@ export default function App() {
           <div className="space-y-3 text-left">
             <strong className="text-white text-xs block font-bold mb-2">প্রতিষ্ঠানের ঠিকানা</strong>
             <p className="text-xs leading-relaxed text-slate-400">
-              আমান বাজার তরাইল মোড় সংলগ্ন রোড,<br />
+              আমান বাজার মোড়, কলেজ রোড রোড,<br />
               হাটহাজারী, চট্টগ্রাম।
             </p>
           </div>
@@ -1420,9 +1103,9 @@ export default function App() {
 
         {/* Base line licensing */}
         <div className="max-w-7xl mx-auto px-4 border-t border-slate-800 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center text-left text-[11px] text-slate-500 gap-4">
-          <p>© {new Date().getFullYear()} স্বপ্ন কারিগরি কম্পিউটার ও আইটি ট্রেনিং ইনস্টিটিউট। সর্বস্বত্ব সংরক্ষিত।</p>
+          <p>© {new Date().getFullYear()} স্বপ্ন কারিগরি কম্পিউটার ট্রেনিং সেন্টার। সর্বস্বত্ব সংরক্ষিত।</p>
           <div className="flex items-center gap-1 font-mono">
-            <span>স্থাপিত ২০১৯</span>
+            <span>স্থাপিত ২০২৫</span>
             <span>•</span>
             <span className="text-indigo-450 animate-pulse">স্মার্ট বাংলাদেশ অর্জনে সংকল্পবদ্ধ</span>
           </div>
