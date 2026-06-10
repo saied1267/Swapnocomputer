@@ -1361,10 +1361,10 @@ export default function AdminPanel({
                             if (onDeleteCoachingPhoto) onDeleteCoachingPhoto(cp.id);
                           }
                         }}
-                        className="absolute top-1.5 right-1.5 bg-red-650 hover:bg-red-750 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-md"
+                        className="absolute top-1.5 right-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg p-1.5 shadow-md cursor-pointer transition-all z-10"
                         title="ছবি মুছুন"
                       >
-                        <Trash2 className="w-2.5 h-2.5" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ))}
@@ -1431,7 +1431,7 @@ export default function AdminPanel({
                 <input
                   type="text"
                   required
-                  placeholder="যেমন: ইশরাত জাহান "
+                  placeholder="যেমন: ইশরাত জাহান খুশি"
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-rose-500"
