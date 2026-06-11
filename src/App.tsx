@@ -824,8 +824,8 @@ export default function App() {
           <div className="flex flex-col items-center justify-start py-8 md:py-12 gap-3 text-center min-h-[300px]">
             <RefreshCw className="w-8 h-8 text-indigo-600 animate-spin mt-4" />
             <div className="space-y-1">
-              <p className="text-sm font-black text-slate-800">স্মার্ট ডাটাবেজ সংযোগ প্রতিস্থাপন করা হচ্ছে...</p>
-              <p className="text-[11px] text-indigo-600 font-black uppercase tracking-widest">সাঈদ আইটি থেকে ডাটাবেজ লোড হচ্ছে...</p>
+              <p className="text-sm font-black text-slate-800">সাঈদ এআই ডাটাবেজ এর সাথে সংযোগ স্থাপন করা হচ্ছে...</p>
+              <p className="text-[11px] text-indigo-600 font-black uppercase tracking-widest">সাঈদ এআই থেকে ডাটাবেজ লোড হচ্ছে...</p>
             </div>
           </div>
         ) : (
