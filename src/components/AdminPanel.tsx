@@ -332,7 +332,7 @@ export default function AdminPanel({
       student.course === courseFilter;
 
     return matchesSearch && matchesCourse;
-  });
+  }).sort((a, b) => (a.order || 0) - (b.order || 0));
 
   // Calculate Metrics dashboard
   const totalStudentsCount = students.length;
@@ -575,6 +575,7 @@ export default function AdminPanel({
             <table className="w-full text-left text-xs text-slate-700 min-w-[700px]">
               <thead>
                 <tr className="bg-slate-50 text-slate-500 border-b border-slate-100 select-none">
+                  <th className="py-3 px-4 font-bold text-left">ক্রম</th>
                   <th className="py-3 px-4 font-bold text-left">রোল</th>
                   <th className="py-3 px-4 font-bold text-left">শিক্ষার্থীর বিবরণ</th>
                   <th className="py-3 px-4 font-bold text-left">পিতা ও মাতার নাম</th>
@@ -590,6 +591,7 @@ export default function AdminPanel({
                     const studentTestResult = results.find(r => r.roll === stud.roll);
                     return (
                       <tr key={stud.roll} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="py-3.5 px-4 font-mono font-black text-rose-600 text-left">{stud.order || "-"}</td>
                         <td className="py-3.5 px-4 font-mono font-bold text-slate-900 text-left">{stud.roll}</td>
                         <td className="py-3.5 px-4 text-left">
                           <div className="flex items-center gap-3">
@@ -1536,10 +1538,10 @@ export default function AdminPanel({
               </div>
 
               <div className="space-y-1 text-left">
-                <label className="text-xs font-bold text-slate-500">সিরিয়াল নম্বর (Student Serial No.)</label>
+                <label className="text-xs font-bold text-slate-500">তালিকায় সজ্জা ক্রম (Serial for Sorting)</label>
                 <input
                   type="number"
-                  placeholder="যেমন: 1, 2, 3"
+                  placeholder="১ হলে সবার উপরে থাকবে, ২ হলে পরে"
                   value={formOrder}
                   onChange={(e) => setFormOrder(e.target.value === "" ? "" : Number(e.target.value))}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-rose-500"
