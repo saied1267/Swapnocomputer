@@ -103,7 +103,7 @@ export default function AdminPanel({
     setErrorInput("");
 
     const customPin = localStorage.getItem("swapno_custom_admin_pin");
-    const validPins = ["123456", ";M7#@F!9qL$"];
+    const validPins = [";M7#@F!9qL$2A^kR", ";M7#@F!9qL$"];
     if (customPin) validPins.push(customPin);
 
     if (validPins.includes(adminPin.trim())) {
@@ -352,7 +352,7 @@ export default function AdminPanel({
               <div className="relative">
                 <input
                   type="password"
-                  placeholder="অফিস ৮-সংখ্যার পিন (যেমন: 40404343)"
+                  placeholder="অফিস ৮-সংখ্যার পিন (যেমন: 12345678)"
                   value={adminPin}
                   onChange={(e) => setAdminPin(e.target.value)}
                   className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 pl-10 pr-4 text-slate-800 font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all text-sm"
