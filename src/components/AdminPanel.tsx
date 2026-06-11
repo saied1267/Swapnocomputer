@@ -103,7 +103,7 @@ export default function AdminPanel({
     setErrorInput("");
 
     const customPin = localStorage.getItem("swapno_custom_admin_pin");
-    const validPins = ["40404343", ";M7#@F!9qL$"];
+    const validPins = ["123456", ";M7#@F!9qL$"];
     if (customPin) validPins.push(customPin);
 
     if (validPins.includes(adminPin.trim())) {
