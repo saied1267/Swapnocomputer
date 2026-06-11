@@ -760,22 +760,23 @@ export default function App() {
             <div className="w-full border-t border-slate-100 pt-3 md:pt-4 overflow-hidden">
               <nav className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth w-full justify-start md:justify-center px-1 py-1">
                 {[
-                  { id: "home", label: "হোম" },
-                  { id: "courses", label: "ভর্তি বুকিং" },
-                  { id: "results", label: "ফলাফল" },
-                  { id: "notices", label: "নোটিশ বোর্ড" },
-                  { id: "pdf-sheets", label: "লেকচার শিট" },
-                  { id: "about", label: "ল্যাব পরিচিতি" },
+                  { id: "home", label: "হোম", icon: <School className="w-4 h-4" /> },
+                  { id: "courses", label: "ভর্তি বুকিং", icon: <BookOpen className="w-4 h-4" /> },
+                  { id: "results", label: "ফলাফল", icon: <Award className="w-4 h-4" /> },
+                  { id: "notices", label: "নোটিশ বোর্ড", icon: <Sparkles className="w-4 h-4" /> },
+                  { id: "pdf-sheets", label: "লেকচার শিট", icon: <Cpu className="w-4 h-4" /> },
+                  { id: "about", label: "ল্যাব পরিচিতি", icon: <MapPin className="w-4 h-4" /> },
                 ].map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => navigateTo(tab.id as any)}
-                    className={`px-3.5 py-2 rounded-xl text-[11px] sm:text-sm font-black transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`px-3.5 py-2.5 rounded-xl text-[11px] sm:text-sm font-black transition-all whitespace-nowrap shrink-0 cursor-pointer flex items-center gap-1.5 ${
                       activeTab === tab.id
-                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-100"
+                        ? "bg-indigo-600 text-white shadow-md shadow-indigo-100 scale-105"
                         : "text-slate-600 hover:bg-slate-100"
                     }`}
                   >
+                    {tab.icon}
                     {tab.label}
                   </button>
                 ))}
@@ -788,10 +789,12 @@ export default function App() {
       {/* 3. Main Stage Content Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
-            <RefreshCw className="w-8 h-8 text-indigo-600 animate-spin" />
-            <p className="text-sm font-bold text-slate-650">সাঈদ এআই এর সাথে সংযোগ স্থাপন করা হচ্ছে...</p>
-            <p className="text-xs text-slate-400 font-semibold">সাঈদ AI থেকে ডাটাবেজ লোড হচ্ছে...</p>
+          <div className="flex flex-col items-center justify-start py-8 md:py-12 gap-3 text-center min-h-[300px]">
+            <RefreshCw className="w-8 h-8 text-indigo-600 animate-spin mt-4" />
+            <div className="space-y-1">
+              <p className="text-sm font-black text-slate-800">স্মার্ট ডাটাবেজ সংযোগ প্রতিস্থাপন করা হচ্ছে...</p>
+              <p className="text-[11px] text-indigo-600 font-black uppercase tracking-widest">সাঈদ আইটি থেকে ডাটাবেজ লোড হচ্ছে...</p>
+            </div>
           </div>
         ) : (
           <AnimatePresence mode="wait">
@@ -816,7 +819,7 @@ export default function App() {
                 <div className="space-y-6 max-w-4xl z-10 relative">
                   <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-750 px-3.5 py-1.5 rounded-full text-xs font-bold">
                     <Flame className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
-                    <span>AmanBaar Ultimate Computer Learning center • আমান বাজোরে  বিশ্বস্ত কম্পিউটার ট্রেনিং সেন্টার</span>
+                    <span>Swapno Computer Academy • আমান বাজারের বিশ্বস্ত কম্পিউটার প্রতিষ্ঠান</span>
                   </div>
                   <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
                     কম্পিউটার শিখুন, <br />
@@ -1106,7 +1109,7 @@ export default function App() {
               <strong className="text-sm font-bold">স্বপ্ন কারিগরি কম্পিউটার ট্রেনিং</strong>
             </div>
             <p className="text-slate-400 text-xs leading-relaxed">
-              স্বাবলম্বী ক্যারিয়ার গড়ার লক্ষ্যে চট্টগ্রামের হাটহাজারী উপজেলার আমান বাজারে প্রতিষ্ঠিত স্বপ্ন কারিগরি কম্পিউটার প্রশিক্ষন কেন্দ্র সর্বদা মানসম্মত এবং যুগোপযোগী কম্পিউটার প্রশিক্ষণ দিয়ে আসছে।
+              স্বাবলম্বী ক্যারিয়ার গড়ার লক্ষ্যে চট্টগ্রামের আমান বাজারে প্রতিষ্ঠিত স্বপ্ন কারিগরি কম্পিউটার প্রশিক্ষন কেন্দ্র সর্বদা মানসম্মত এবং যুগোপযোগী কম্পিউটার প্রশিক্ষণ দিয়ে আসছে।
             </p>
           </div>
           
@@ -1149,31 +1152,6 @@ export default function App() {
           </div>
         </div>
       </footer>
-
-      {/* Mobile Bottom Navigation Bar (Fixed for Mobile Screens) */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 py-2 sm:hidden z-50 flex items-center justify-around px-1 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] no-print">
-        {[
-          { id: "home", label: "হোম", icon: <School className="w-5 h-5" /> },
-          { id: "courses", label: "ভর্তি", icon: <BookOpen className="w-5 h-5" /> },
-          { id: "results", label: "ফলাফল", icon: <Award className="w-5 h-5" /> },
-          { id: "notices", label: "নোটিশ", icon: <Sparkles className="w-5 h-5" /> },
-          { id: "pdf-sheets", label: "পিডিএফ", icon: <Cpu className="w-5 h-5" /> },
-          { id: "about", label: "ল্যাব", icon: <MapPin className="w-5 h-5" /> },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => navigateTo(tab.id as any)}
-            className={`flex flex-col items-center gap-1 px-2 py-0.5 rounded-xl transition-all ${
-              activeTab === tab.id ? "text-indigo-600 font-black scale-110" : "text-slate-400 font-bold"
-            }`}
-          >
-            <div className={`p-1.5 rounded-xl ${activeTab === tab.id ? "bg-indigo-50 shadow-xs" : ""}`}>
-              {tab.icon}
-            </div>
-            <span className="text-[8px] whitespace-nowrap">{tab.label}</span>
-          </button>
-        ))}
-      </div>
 
     </div>
   );
