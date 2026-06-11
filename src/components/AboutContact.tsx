@@ -35,7 +35,7 @@ export default function AboutContact({ coachingPhotos = [] }: AboutContactProps)
             স্বপ্ন কারিগরি কম্পিউটার প্রশিক্ষন কেন্দ্র
           </h3>
           <p className="text-slate-200 text-xs md:text-sm leading-relaxed font-normal">
-            স্বপ্ন কারিগরি কম্পিউটার প্রশিক্ষন কেন্দ্র ২০২৫ সালে চট্টগ্রামের হাটহাজারী উপজেলার আমান বাজারে প্রতিষ্ঠিত হওয়ার পর থেকে শত শত শিক্ষার্থীকে আইটি বিষয়ে দক্ষ ও স্বাবলম্বী করে তুলেছে। স্থানীয় তরুণ সমাজকে আধুনিক বিশ্বের চ্যালেঞ্জ মোকাবেলায় কম্পিউটার শিক্ষার প্রসারে পরিচালক মোহাম্মদ সাঈদ স্যারের সরাসরি তত্ত্বাবধানে প্রতিষ্ঠানটি নিরলস কাজ করে যাচ্ছে।
+            স্বপ্ন কারিগরি কম্পিউটার প্রশিক্ষন কেন্দ্র ২০২৫ সালে চট্টগ্রামের আমান বাজারে প্রতিষ্ঠিত হওয়ার পর থেকে শত শত শিক্ষার্থীকে আইটি বিষয়ে দক্ষ ও স্বাবলম্বী করে তুলেছে। স্থানীয় তরুণ সমাজকে আধুনিক বিশ্বের চ্যালেঞ্জ মোকাবেলায় কম্পিউটার শিক্ষার প্রসারে পরিচালক মোহাম্মদ সাঈদ স্যারের সরাসরি তত্ত্বাবধানে প্রতিষ্ঠানটি নিরলস কাজ করে যাচ্ছে।
           </p>
         </div>
       </div>
@@ -140,7 +140,7 @@ export default function AboutContact({ coachingPhotos = [] }: AboutContactProps)
                 </div>
                 <div>
                   <strong className="text-slate-800 text-xs block mb-0.5">আমাদের ল্যাব অবস্থান:</strong>
-                  <span>হাজি ইব্রাহিম মার্কেট ২য় তলা, কলেজ রোড, আমান বাজার, হাটহাজারি, চট্টগ্রাম।</span>
+                  <span>হাজি ইব্রাহিম মার্কেট ২য় তলা, কলেজ রোড, আমান বাজার, চট্টগ্রাম।</span>
                 </div>
               </div>
 
@@ -182,8 +182,8 @@ export default function AboutContact({ coachingPhotos = [] }: AboutContactProps)
         <div className="lg:col-span-2 text-left space-y-4">
           <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm h-full flex flex-col justify-between space-y-4">
             <div className="space-y-1">
-              <h4 className="font-extrabold text-slate-800 text-base">হাটহাজারী রোড থেকে আসার রুট ম্যাপ</h4>
-              <p className="text-xs text-slate-500">চট্টগ্রাম শহরের অক্সিজেন মোড় হয়ে হাটহাজারী রোডে আমান বাজার বাসস্ট্যান্ড নামলেই সহজে পাওয়া যাবে।</p>
+              <h4 className="font-extrabold text-slate-800 text-base">আমান বাজার রুট ম্যাপ</h4>
+              <p className="text-xs text-slate-500">চট্টগ্রাম শহরের অক্সিজেন মোড় হয়ে আমান বাজার বাসস্ট্যান্ড নামলেই সহজে পাওয়া যাবে।</p>
             </div>
             
             {/* Visual static map representation */}
