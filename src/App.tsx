@@ -816,7 +816,7 @@ export default function App() {
                 <div className="space-y-6 max-w-4xl z-10 relative">
                   <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-750 px-3.5 py-1.5 rounded-full text-xs font-bold">
                     <Flame className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
-                    <span>Hathazari's Ultimate Tech Learning Wing • হাটহাজারীর বিশ্বস্ত কম্পিউটার উইং</span>
+                    <span>AmanBaar Ultimate Computer Learning center • আমান বাজোরে  বিশ্বস্ত কম্পিউটার ট্রেনিং সেন্টার</span>
                   </div>
                   <h2 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
                     কম্পিউটার শিখুন, <br />
