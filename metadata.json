@@ -1,0 +1,6 @@
+{
+  "name": "Swapno Computer Training Center",
+  "description": "An outstanding, modern student database and model test result checker portal for Swapno Technical & Computer Training Center, Hathazari, Bangladesh.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
