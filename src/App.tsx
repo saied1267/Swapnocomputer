@@ -790,8 +790,8 @@ export default function App() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
             <RefreshCw className="w-8 h-8 text-indigo-600 animate-spin" />
-            <p className="text-sm font-bold text-slate-650">স্মার্ট ডাটাবেজ সংযোগ প্রতিস্থাপন করা হচ্ছে...</p>
-            <p className="text-xs text-slate-400 font-semibold">সাঈদ আইটি থেকে ডাটাবেজ লোড হচ্ছে...</p>
+            <p className="text-sm font-bold text-slate-650">সাঈদ এআই এর সাথে সংযোগ স্থাপন করা হচ্ছে...</p>
+            <p className="text-xs text-slate-400 font-semibold">সাঈদ AI থেকে ডাটাবেজ লোড হচ্ছে...</p>
           </div>
         ) : (
           <AnimatePresence mode="wait">
